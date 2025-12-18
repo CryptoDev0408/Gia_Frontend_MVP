@@ -62,10 +62,10 @@ export const Header: React.FC = () => {
   let buttonData: ButtonData | null = null;
   try {
     menuItems = JSON.parse(headerData.menu_items);
-  } catch {}
+  } catch { }
   try {
     buttonData = JSON.parse(headerData.button);
-  } catch {}
+  } catch { }
 
   return (
     <motion.header
@@ -84,13 +84,13 @@ export const Header: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-           <a href='/' className="flex items-center">
-             <img
-              src="/logo.png"
-              alt="GIA Token"
-              className="h-12 w-12 object-contain opacity-90"
-            />
-           </a>
+            <a href='/' className="flex items-center">
+              <img
+                src="/logo.png"
+                alt="GIA Token"
+                className="h-12 w-12 object-contain opacity-90"
+              />
+            </a>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -100,6 +100,10 @@ export const Header: React.FC = () => {
                 {item.text}
               </a>
             ))}
+            {/* AI Blog Link */}
+            <a href="/ai-blog" className="text-white hover:text-brand-accent transition-colors font-semibold">
+              AI Blog
+            </a>
           </nav>
 
           {/* Connect Wallet / Button */}
@@ -107,16 +111,16 @@ export const Header: React.FC = () => {
             <Button onClick={handleConnectWallet} disabled={isConnecting} variant="outline" className="min-w-[140px] font-small connect-wallet">
               {isConnecting ? 'Connecting...' : isConnected && account ? formatAddress(account) : buttonData?.text || 'Connect Wallet'}
             </Button>
-             <>
-    <style>
-      {`
+            <>
+              <style>
+                {`
         .connect-wallet {
          font-weight: 400;
           border-width: 1px;
         }
       `}
-    </style>
-  </>
+              </style>
+            </>
           </div>
 
           {/* Mobile menu toggle */}

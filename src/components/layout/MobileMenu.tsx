@@ -62,6 +62,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           </a>
         ))}
 
+        {/* AI Blog Link */}
+        <a
+          href="/ai-blog"
+          className="block text-white hover:text-brand-accent transition-colors text-center font-semibold"
+          onClick={onClose}
+        >
+          AI Blog
+        </a>
+
         {button && (
           <Button
             onClick={() => {
@@ -75,8 +84,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             {isConnecting
               ? 'Connecting...'
               : isConnected && account
-              ? formatAddress(account)
-              : button.text}
+                ? formatAddress(account)
+                : button.text}
           </Button>
         )}
       </div>

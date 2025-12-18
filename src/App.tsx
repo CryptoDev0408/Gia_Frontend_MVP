@@ -9,6 +9,7 @@ import { FAQ } from './components/sections/FAQ';
 import { JoinRevolution } from './components/sections/JoinRevolution';
 import PrivacyPage from './pages/PrivacyPage';
 import PolicyPage from './pages/PolicyPage';
+import AIBlogPage from './pages/AIBlogPage';
 import './index.css';
 
 // Add window.ethereum type declarations
@@ -43,6 +44,9 @@ function App() {
                 </>
               }
             />
+
+            {/* AI Blog Page */}
+            <Route path="/ai-blog" element={<AIBlogPage />} />
 
             {/* Separate Pages */}
             <Route path="/privacy" element={<PrivacyPage />} />
