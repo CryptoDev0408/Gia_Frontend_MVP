@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../ui/Button';
 
 interface MenuItem {
@@ -33,8 +34,34 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   menuItems,
   button,
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+    e.preventDefault();
+    onClose();
+    if (link.startsWith('#')) {
+      if (location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const element = document.querySelector(link);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
+        const element = document.querySelector(link);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      navigate(link);
+    }
   };
 
   const menuVariants = {
@@ -55,21 +82,21 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           <a
             key={item.text}
             href={item.link}
-            className="block text-white hover:text-brand-accent transition-colors text-center"
-            onClick={onClose}
+            className="block text-white hover:text-brand-accent transition-colors text-center cursor-pointer"
+            onClick={(e) => handleNavClick(e, item.link)}
           >
             {item.text}
           </a>
         ))}
 
         {/* AI Blog Link */}
-        <a
-          href="/ai-blog"
+        <Link
+          to="/ai-blog"
           className="block text-white hover:text-brand-accent transition-colors text-center font-semibold"
           onClick={onClose}
         >
           AI Blog
-        </a>
+        </Link>
 
         {button && (
           <Button

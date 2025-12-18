@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../ui/Button';
 import { useWallet } from '../../hooks/useWallet';
 import { MobileMenu } from './MobileMenu';
@@ -26,6 +27,8 @@ export const Header: React.FC = () => {
   const [headerData, setHeaderData] = useState<HeaderData | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { account, isConnected, isConnecting, connect, disconnect } = useWallet();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     // Try localStorage first
@@ -51,6 +54,31 @@ export const Header: React.FC = () => {
   const handleConnectWallet = async () => {
     if (isConnected) await disconnect();
     else await connect();
+  };
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+    e.preventDefault();
+    if (link.startsWith('#')) {
+      // If we're not on homepage, navigate to homepage first then scroll
+      if (location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const element = document.querySelector(link);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
+        // Already on homepage, just scroll
+        const element = document.querySelector(link);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    } else {
+      // Regular link, use navigate
+      navigate(link);
+    }
   };
 
   const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -84,26 +112,31 @@ export const Header: React.FC = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <a href='/' className="flex items-center">
+            <Link to='/' className="flex items-center">
               <img
                 src="/logo.png"
                 alt="GIA Token"
                 className="h-12 w-12 object-contain opacity-90"
               />
-            </a>
+            </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
             {menuItems.map((item) => (
-              <a key={item.text} href={item.link} className="text-white hover:text-brand-accent transition-colors">
+              <a
+                key={item.text}
+                href={item.link}
+                onClick={(e) => handleNavClick(e, item.link)}
+                className="text-white hover:text-brand-accent transition-colors cursor-pointer"
+              >
                 {item.text}
               </a>
             ))}
             {/* AI Blog Link */}
-            <a href="/ai-blog" className="text-white hover:text-brand-accent transition-colors font-semibold">
+            <Link to="/ai-blog" className="text-white hover:text-brand-accent transition-colors font-semibold">
               AI Blog
-            </a>
+            </Link>
           </nav>
 
           {/* Connect Wallet / Button */}

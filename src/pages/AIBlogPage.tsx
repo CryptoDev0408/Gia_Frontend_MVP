@@ -200,7 +200,7 @@ export const AIBlogPage: React.FC = () => {
 	return (
 		<div className="min-h-screen bg-brand-bg pt-20">
 			{/* Header Section */}
-			<section className="relative overflow-hidden bg-gradient-to-b from-brand-bg to-brand-bg/50 py-16">
+			{/* <section className="relative overflow-hidden bg-gradient-to-b from-brand-bg to-brand-bg/50 py-16">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 					<motion.div
 						initial={{ opacity: 0, y: 30 }}
@@ -211,12 +211,12 @@ export const AIBlogPage: React.FC = () => {
 						<h1 className="text-4xl md:text-5xl text-gradient mb-6 font-bold">
 							AI Fashion Trend Intelligence
 						</h1>
-						{/* <p className="text-lg md:text-xl text-brand-secondary max-w-3xl mx-auto leading-relaxed">
+						<p className="text-lg md:text-xl text-brand-secondary max-w-3xl mx-auto leading-relaxed">
 							Real-time trend analysis powered by AI. Discover what's shaping the fashion world across X and Instagram.
-						</p> */}
+						</p>
 					</motion.div>
 				</div>
-			</section>
+			</section> */}
 
 			{/* Trend Cards Grid */}
 			<section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
