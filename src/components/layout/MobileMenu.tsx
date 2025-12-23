@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '../ui/Button';
+// import { Button } from '../ui/Button';
 
 interface MenuItem {
   text: string;
@@ -16,10 +16,10 @@ interface ButtonData {
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  isConnected: boolean;
-  account: string | null;
-  onConnectWallet: () => void;
-  isConnecting: boolean;
+  // isConnected: boolean;
+  // account: string | null;
+  // onConnectWallet: () => void;
+  // isConnecting: boolean;
   menuItems: MenuItem[];       // dynamic menu items
   button?: ButtonData | null;  // dynamic button
 }
@@ -27,19 +27,19 @@ interface MobileMenuProps {
 export const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   onClose,
-  isConnected,
-  account,
-  onConnectWallet,
-  isConnecting,
+  // isConnected,
+  // account,
+  // onConnectWallet,
+  // isConnecting,
   menuItems,
-  button,
+  // button,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const formatAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  // const formatAddress = (address: string) => {
+  //   return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  // };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
     e.preventDefault();
@@ -98,7 +98,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           AI Blog
         </Link>
 
-        {button && (
+        {/* {button && (
           <Button
             onClick={() => {
               onConnectWallet();
@@ -114,7 +114,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 ? formatAddress(account)
                 : button.text}
           </Button>
-        )}
+        )} */}
       </div>
     </motion.div>
   );

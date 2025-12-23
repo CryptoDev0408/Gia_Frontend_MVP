@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../ui/Button';
-import { useWallet } from '../../hooks/useWallet';
+// import { useWallet } from '../../hooks/useWallet';
+import { useAuth } from '../../contexts/AuthContext';
 import { MobileMenu } from './MobileMenu';
 import axios from 'axios';
 
@@ -26,7 +27,9 @@ interface HeaderData {
 export const Header: React.FC = () => {
   const [headerData, setHeaderData] = useState<HeaderData | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { account, isConnected, isConnecting, connect, disconnect } = useWallet();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  // const { account, isConnected, isConnecting, connect, disconnect } = useWallet();
+  const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,10 +54,10 @@ export const Header: React.FC = () => {
     fetchHeader();
   }, []);
 
-  const handleConnectWallet = async () => {
-    if (isConnected) await disconnect();
-    else await connect();
-  };
+  // const handleConnectWallet = async () => {
+  //   if (isConnected) await disconnect();
+  //   else await connect();
+  // };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
     e.preventDefault();
@@ -81,7 +84,7 @@ export const Header: React.FC = () => {
     }
   };
 
-  const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
+  // const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   if (!headerData) return <p className="text-white text-center py-4">Loading header...</p>;
 
@@ -139,26 +142,62 @@ export const Header: React.FC = () => {
             </Link>
           </nav>
 
-          {/* Connect Wallet / Button */}
-          <div className="hidden md:block">
-            <Button onClick={handleConnectWallet} disabled={isConnecting} variant="outline" className="min-w-[140px] font-small connect-wallet">
+          {/* Connect Wallet / Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Auth User Menu */}
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center space-x-2 text-white hover:text-brand-accent transition-colors"
+                >
+                  <UserCircleIcon className="h-8 w-8" />
+                  <span className="text-sm">{user.username || user.email}</span>
+                </button>
+
+                {showUserMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-[#0e151d] border border-brand-secondary/20 rounded-lg shadow-xl py-2">
+                    <div className="px-4 py-2 border-b border-brand-secondary/20">
+                      <p className="text-xs text-gray-400">Signed in as</p>
+                      <p className="text-sm text-white truncate">{user.email || user.username}</p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setShowUserMenu(false);
+                        navigate('/');
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-white hover:bg-brand-secondary/20 transition-colors"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Button
+                onClick={() => openAuthModal('login')}
+                variant="outline"
+                className="min-w-[100px] font-small"
+              >
+                Sign In
+              </Button>
+            )}
+
+            {/* Wallet Connect Button */}
+            {/* <Button
+              onClick={handleConnectWallet}
+              disabled={isConnecting}
+              variant="outline"
+              className="min-w-[140px] font-small connect-wallet"
+            >
               {isConnecting ? 'Connecting...' : isConnected && account ? formatAddress(account) : buttonData?.text || 'Connect Wallet'}
-            </Button>
-            <>
-              <style>
-                {`
-        .connect-wallet {
-         font-weight: 400;
-          border-width: 1px;
-        }
-      `}
-              </style>
-            </>
+            </Button> */}
           </div>
 
           {/* Mobile menu toggle */}
           <div className="md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white hover:text-brand-accent focus:outline-none connect-wallet">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white hover:text-brand-accent focus:outline-none">
               {isMobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
             </button>
           </div>
@@ -169,10 +208,10 @@ export const Header: React.FC = () => {
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        isConnected={isConnected}
-        account={account}
-        onConnectWallet={handleConnectWallet}
-        isConnecting={isConnecting}
+        // isConnected={isConnected}
+        // account={account}
+        // onConnectWallet={handleConnectWallet}
+        // isConnecting={isConnecting}
         menuItems={menuItems}
         button={buttonData}
       />

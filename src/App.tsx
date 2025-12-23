@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import { AuthModal } from './components/AuthModal';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { Hero } from './components/sections/Hero';
@@ -26,38 +28,43 @@ declare global {
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-brand-bg overflow-x-hidden">
-        <Header />
-        <main>
-          <Routes>
-            {/* Landing Page with Sections */}
-            <Route
-              path="/"
-              element={
-                <>
-                  <Hero />
-                  <About />
-                  <Whitepaper />
-                  <Teams />
-                  <FAQ />
-                  <JoinRevolution />
-                </>
-              }
-            />
+      <AuthProvider>
+        <div className="min-h-screen bg-brand-bg overflow-x-hidden">
+          <Header />
+          <main>
+            <Routes>
+              {/* Landing Page with Sections */}
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
 
-            {/* AI Blog Page */}
-            <Route path="/ai-blog" element={<AIBlogPage />} />
+              {/* AI Blog Page */}
+              <Route path="/ai-blog" element={<AIBlogPage />} />
 
-            {/* Separate Pages */}
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/policy" element={<PolicyPage />} />
+              {/* Separate Pages */}
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/policy" element={<PolicyPage />} />
 
-            {/* Optional: 404 Page */}
-            <Route path="*" element={<div className="text-center py-20 text-white">Page Not Found</div>} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+              {/* Optional: 404 Page */}
+              <Route path="*" element={<div className="text-center py-20 text-white">Page Not Found</div>} />
+            </Routes>
+          </main>
+          <Footer />
+
+          {/* Global Auth Modal */}
+          <AuthModal />
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
