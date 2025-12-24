@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Auth Test</title>
+  </head>
+  <body>
+    <h1>Backend Auth Test</h1>
+    <div>
+      <h2>Register</h2>
+      <input
+        type="email"
+        id="regEmail"
+        placeholder="Email"
+        value="testuser3@test.com"
+      />
+      <input
+        type="password"
+        id="regPassword"
+        placeholder="Password"
+        value="test123456"
+      />
+      <input
+        type="text"
+        id="regUsername"
+        placeholder="Username"
+        value="testuser3"
+      />
+      <button onclick="testRegister()">Register</button>
+    </div>
+    <div>
+      <h2>Login</h2>
+      <input
+        type="email"
+        id="loginEmail"
+        placeholder="Email"
+        value="testuser3@test.com"
+      />
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Password"
+        value="test123456"
+      />
+      <button onclick="testLogin()">Login</button>
+    </div>
+    <div>
+      <h2>Result</h2>
+      <pre id="result"></pre>
+    </div>
+
+    <script>
+      const API_URL = "http://localhost:5005/api/v1";
+
+      async function testRegister() {
+        try {
+          const response = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: document.getElementById("regEmail").value,
+              password: document.getElementById("regPassword").value,
+              username: document.getElementById("regUsername").value,
+            }),
+          });
+
+          const data = await response.json();
+          document.getElementById("result").textContent = JSON.stringify(
+            data,
+            null,
+            2
+          );
+
+          if (data.success) {
+            localStorage.setItem("accessToken", data.data.accessToken);
+          }
+        } catch (error) {
+          document.getElementById("result").textContent =
+            "Error: " + error.message;
+        }
+      }
+
+      async function testLogin() {
+        try {
+          const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: document.getElementById("loginEmail").value,
+              password: document.getElementById("loginPassword").value,
+            }),
+          });
+
+          const data = await response.json();
+          document.getElementById("result").textContent = JSON.stringify(
+            data,
+            null,
+            2
+          );
+
+          if (data.success) {
+            localStorage.setItem("accessToken", data.data.accessToken);
+          }
+        } catch (error) {
+          document.getElementById("result").textContent =
+            "Error: " + error.message;
+        }
+      }
+    </script>
+  </body>
+</html>

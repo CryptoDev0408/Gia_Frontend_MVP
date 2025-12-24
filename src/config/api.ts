@@ -18,7 +18,12 @@ export const API_ENDPOINTS = {
 	TRENDS: `${API_BASE_URL}/trends`,
 	TREND_CLUSTERS: `${API_BASE_URL}/trends/clusters`,
 
+	// Blogs endpoints
+	BLOGS: `${API_BASE_URL}/blogs`,
+	BLOGS_SCRAPE: `${API_BASE_URL}/blogs/scrape`,
+
 	// Admin endpoints
+	ADMIN_SCRAPE_FASHION: `${API_BASE_URL}/admin/scrape/fashion`,
 	ADMIN_INSIGHTS: `${API_BASE_URL}/admin/insights`,
 	ADMIN_STATS: `${API_BASE_URL}/admin/stats`,
 };

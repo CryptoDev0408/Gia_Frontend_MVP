@@ -102,13 +102,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 			});
 
 			if (response.data.success) {
-				const { user: userData, accessToken: token } = response.data.data;
+				const { user: userData, accessToken: token, refreshToken } = response.data.data;
 
 				setUser(userData);
 				setAccessToken(token);
 
 				// Save to localStorage
 				localStorage.setItem('accessToken', token);
+				localStorage.setItem('refreshToken', refreshToken);
 				localStorage.setItem('user', JSON.stringify(userData));
 
 				// Set default Authorization header
