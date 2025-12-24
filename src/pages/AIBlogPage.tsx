@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ShareIcon, ChevronDownIcon, Bars3Icon, Squares2X2Icon, ArrowLeftIcon, ArrowPathIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ShareIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 
@@ -29,7 +29,7 @@ export const AIBlogPage: React.FC = () => {
 	const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 	const [commentBoxOpen, setCommentBoxOpen] = useState<number | null>(null);
 	const [comments, setComments] = useState<Record<number, string>>({});
-	const [viewMode, setViewMode] = useState<'row' | 'grid'>('row');
+	const [viewMode] = useState<'row' | 'grid'>('grid'); // Fixed to grid layout
 	const [selectedCard, setSelectedCard] = useState<Blog | null>(null);
 
 	// Fetch blogs from backend
@@ -41,7 +41,8 @@ export const AIBlogPage: React.FC = () => {
 		try {
 			setLoading(true);
 			setError(null);
-			const response = await apiClient.get(API_ENDPOINTS.BLOGS);
+			// Include unapproved blogs for testing (set to false in production)
+			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=true`);
 			setBlogs(response.data.data.blogs);
 		} catch (err: any) {
 			console.error('Failed to fetch blogs:', err);
@@ -162,17 +163,6 @@ export const AIBlogPage: React.FC = () => {
 					>
 						Retry
 					</button>
-				</div>
-			</div>
-		);
-	}
-
-	if (blogs.length === 0) {
-		return (
-			<div className="min-h-screen bg-brand-bg pt-20 flex items-center justify-center">
-				<div className="text-center">
-					<p className="text-brand-secondary">No fashion trends available yet.</p>
-					<p className="text-brand-secondary/60 text-sm mt-2">Check back soon for the latest trends!</p>
 				</div>
 			</div>
 		);
@@ -351,57 +341,37 @@ export const AIBlogPage: React.FC = () => {
 
 			{/* Main Content */}
 			<section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-				{/* Action Buttons */}
-				<div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-					<div className="flex items-center gap-3">
-						{/* Scraping Button */}
-						<motion.button
-							onClick={handleScraping}
-							disabled={scraping}
-							whileHover={{ scale: scraping ? 1 : 1.05 }}
-							whileTap={{ scale: scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${scraping
-								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
-								: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400'
-								}`}
-						>
-							<BoltIcon className={`w-5 h-5 ${scraping ? 'animate-pulse' : ''}`} />
-							{scraping ? 'Scraping...' : 'Start Scraping'}
-						</motion.button>
+				{/* Action Buttons - Right Aligned */}
+				<div className="flex items-center justify-end gap-3 mb-6">
+					{/* Scraping Button */}
+					<motion.button
+						onClick={handleScraping}
+						disabled={scraping}
+						whileHover={{ scale: scraping ? 1 : 1.05 }}
+						whileTap={{ scale: scraping ? 1 : 0.95 }}
+						className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${scraping
+							? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
+							: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400'
+							}`}
+					>
+						<BoltIcon className={`w-5 h-5 ${scraping ? 'animate-pulse' : ''}`} />
+						{scraping ? 'Scraping...' : 'Start Scraping'}
+					</motion.button>
 
-						{/* Refresh Button */}
-						<motion.button
-							onClick={fetchBlogs}
-							disabled={loading || scraping}
-							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
-							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${loading || scraping
-								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
-								: 'bg-brand-secondary/20 text-white hover:bg-brand-secondary/30 border border-brand-secondary/30'
-								}`}
-						>
-							<ArrowPathIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-							Refresh
-						</motion.button>
-					</div>
-
-					{/* View Mode Toggle */}
-					<div className="flex items-center gap-1 bg-gradient-to-r from-brand-secondary/5 to-brand-accent/5 rounded-xl p-1.5 border border-brand-secondary/30">
-						<motion.button
-							onClick={() => setViewMode('row')}
-							className={`flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all ${viewMode === 'row' ? 'bg-brand-accent text-white' : 'text-brand-secondary hover:text-white'}`}
-						>
-							<Bars3Icon className="w-5 h-5" />
-							<span className="text-sm font-semibold">Row</span>
-						</motion.button>
-						<motion.button
-							onClick={() => setViewMode('grid')}
-							className={`flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-brand-accent text-white' : 'text-brand-secondary hover:text-white'}`}
-						>
-							<Squares2X2Icon className="w-5 h-5" />
-							<span className="text-sm font-semibold">Grid</span>
-						</motion.button>
-					</div>
+					{/* Refresh Button */}
+					<motion.button
+						onClick={fetchBlogs}
+						disabled={loading || scraping}
+						whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
+						whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
+						className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${loading || scraping
+							? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
+							: 'bg-brand-secondary/20 text-white hover:bg-brand-secondary/30 border border-brand-secondary/30'
+							}`}
+					>
+						<ArrowPathIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+						Refresh
+					</motion.button>
 				</div>
 
 				{/* Scraping Status Message */}
@@ -415,119 +385,126 @@ export const AIBlogPage: React.FC = () => {
 					</motion.div>
 				)}
 
-				<div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-					{blogs.map((blog, index) => {
-						const isExpanded = expandedCards.has(blog.id);
+				{blogs.length === 0 ? (
+					<div className="text-center py-20">
+						<p className="text-brand-secondary text-lg mb-2">No fashion trends available yet.</p>
+						<p className="text-brand-secondary/60 text-sm">Click "Start Scraping" to fetch the latest trends!</p>
+					</div>
+				) : (
+					<div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+						{blogs.map((blog, index) => {
+							const isExpanded = expandedCards.has(blog.id);
 
-						// Grid Mode
-						if (viewMode === 'grid') {
+							// Grid Mode
+							if (viewMode === 'grid') {
+								return (
+									<motion.div
+										key={blog.id}
+										initial={{ opacity: 0, y: 50 }}
+										whileInView={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.3 }}
+										viewport={{ once: true }}
+										onClick={() => setSelectedCard(blog)}
+										className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
+									>
+										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
+										<p className="text-brand-secondary text-sm mb-3 line-clamp-2">{blog.description}</p>
+										<span className="text-xs text-brand-accent uppercase">{blog.platform}</span>
+										{blog.image && (
+											<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+										)}
+									</motion.div>
+								);
+							}
+
+							// Row Mode
 							return (
 								<motion.div
 									key={blog.id}
 									initial={{ opacity: 0, y: 50 }}
 									whileInView={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.3 }}
+									transition={{ duration: 0.6, delay: index * 0.1 }}
 									viewport={{ once: true }}
-									onClick={() => setSelectedCard(blog)}
-									className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
+									className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 overflow-hidden"
 								>
-									<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
-									<p className="text-brand-secondary text-sm mb-3 line-clamp-2">{blog.description}</p>
-									<span className="text-xs text-brand-accent uppercase">{blog.platform}</span>
-									{blog.image && (
-										<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-									)}
+									<div className="p-6">
+										<div className="flex items-start justify-between mb-4">
+											<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
+											<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase ml-3">{blog.platform}</span>
+										</div>
+										<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
+										<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
+											<p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p>
+											<p className={`text-sm text-white ${!isExpanded ? 'line-clamp-2' : ''}`}>{blog.ai_insight}</p>
+										</div>
+										<span className="text-xs text-brand-secondary">{formatDate(blog.createdAt)}</span>
+									</div>
+
+									<div className="px-6 pb-4">
+										<button
+											onClick={() => toggleExpand(blog.id)}
+											className="w-full py-3 bg-brand-accent/20 text-brand-accent rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
+										>
+											{isExpanded ? 'Show Less' : 'View Details'}
+											<ChevronDownIcon className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+										</button>
+									</div>
+
+									<AnimatePresence>
+										{isExpanded && (
+											<motion.div
+												initial={{ height: 0, opacity: 0 }}
+												animate={{ height: 'auto', opacity: 1 }}
+												exit={{ height: 0, opacity: 0 }}
+												className="px-6 pb-6 border-t border-brand-secondary/20"
+											>
+												{blog.image && (
+													<img src={blog.image} alt={blog.title} className="w-full h-64 object-cover rounded-lg my-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+												)}
+												<a href={blog.link} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 bg-brand-accent text-white rounded-lg mb-4 font-semibold">
+													View Original Article →
+												</a>
+												<div className="flex items-center justify-center gap-2 pt-4 border-t border-brand-secondary/20">
+													<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
+														{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5 text-brand-secondary" />}
+														<span className="text-xs text-brand-secondary">Like</span>
+													</button>
+													<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
+														<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
+														<span className="text-xs text-brand-secondary">Comment</span>
+													</button>
+													<button onClick={() => handleShare(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
+														<ShareIcon className="w-5 h-5 text-brand-secondary" />
+														<span className="text-xs text-brand-secondary">Repost</span>
+													</button>
+												</div>
+												<AnimatePresence>
+													{commentBoxOpen === blog.id && (
+														<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 pt-4 border-t border-brand-secondary/20">
+															<div className="flex gap-2">
+																<input
+																	type="text"
+																	value={comments[blog.id] || ''}
+																	onChange={(e) => setComments(prev => ({ ...prev, [blog.id]: e.target.value }))}
+																	placeholder="Add a comment..."
+																	className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none"
+																	onKeyPress={(e) => e.key === 'Enter' && handleComment(blog.id)}
+																/>
+																<button onClick={() => handleComment(blog.id)} className="px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold text-sm">
+																	Post
+																</button>
+															</div>
+														</motion.div>
+													)}
+												</AnimatePresence>
+											</motion.div>
+										)}
+									</AnimatePresence>
 								</motion.div>
 							);
-						}
-
-						// Row Mode
-						return (
-							<motion.div
-								key={blog.id}
-								initial={{ opacity: 0, y: 50 }}
-								whileInView={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.6, delay: index * 0.1 }}
-								viewport={{ once: true }}
-								className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 overflow-hidden"
-							>
-								<div className="p-6">
-									<div className="flex items-start justify-between mb-4">
-										<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
-										<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase ml-3">{blog.platform}</span>
-									</div>
-									<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
-									<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
-										<p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p>
-										<p className={`text-sm text-white ${!isExpanded ? 'line-clamp-2' : ''}`}>{blog.ai_insight}</p>
-									</div>
-									<span className="text-xs text-brand-secondary">{formatDate(blog.createdAt)}</span>
-								</div>
-
-								<div className="px-6 pb-4">
-									<button
-										onClick={() => toggleExpand(blog.id)}
-										className="w-full py-3 bg-brand-accent/20 text-brand-accent rounded-xl font-semibold text-sm flex items-center justify-center gap-2"
-									>
-										{isExpanded ? 'Show Less' : 'View Details'}
-										<ChevronDownIcon className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-									</button>
-								</div>
-
-								<AnimatePresence>
-									{isExpanded && (
-										<motion.div
-											initial={{ height: 0, opacity: 0 }}
-											animate={{ height: 'auto', opacity: 1 }}
-											exit={{ height: 0, opacity: 0 }}
-											className="px-6 pb-6 border-t border-brand-secondary/20"
-										>
-											{blog.image && (
-												<img src={blog.image} alt={blog.title} className="w-full h-64 object-cover rounded-lg my-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-											)}
-											<a href={blog.link} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 bg-brand-accent text-white rounded-lg mb-4 font-semibold">
-												View Original Article →
-											</a>
-											<div className="flex items-center justify-center gap-2 pt-4 border-t border-brand-secondary/20">
-												<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
-													{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5 text-brand-secondary" />}
-													<span className="text-xs text-brand-secondary">Like</span>
-												</button>
-												<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
-													<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
-													<span className="text-xs text-brand-secondary">Comment</span>
-												</button>
-												<button onClick={() => handleShare(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
-													<ShareIcon className="w-5 h-5 text-brand-secondary" />
-													<span className="text-xs text-brand-secondary">Repost</span>
-												</button>
-											</div>
-											<AnimatePresence>
-												{commentBoxOpen === blog.id && (
-													<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 pt-4 border-t border-brand-secondary/20">
-														<div className="flex gap-2">
-															<input
-																type="text"
-																value={comments[blog.id] || ''}
-																onChange={(e) => setComments(prev => ({ ...prev, [blog.id]: e.target.value }))}
-																placeholder="Add a comment..."
-																className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none"
-																onKeyPress={(e) => e.key === 'Enter' && handleComment(blog.id)}
-															/>
-															<button onClick={() => handleComment(blog.id)} className="px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold text-sm">
-																Post
-															</button>
-														</div>
-													</motion.div>
-												)}
-											</AnimatePresence>
-										</motion.div>
-									)}
-								</AnimatePresence>
-							</motion.div>
-						);
-					})}
-				</div>
+						})}
+					</div>
+				)}
 			</section>
 		</div>
 	);
