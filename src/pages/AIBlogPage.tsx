@@ -106,15 +106,29 @@ export const AIBlogPage: React.FC = () => {
 
 	const handleApproveBlog = async (blogId: number) => {
 		try {
+			console.log(`[AIBlogPage] Approving blog ${blogId}...`, {
+				isAdmin,
+				userRole: user?.role,
+				userId: user?.id
+			});
+
 			setActionLoading(prev => ({ ...prev, [blogId]: true }));
-			await apiClient.patch(API_ENDPOINTS.BLOG_APPROVE(blogId));
+
+			const response = await apiClient.patch(API_ENDPOINTS.BLOG_APPROVE(blogId));
+
+			console.log(`[AIBlogPage] Blog ${blogId} approved successfully:`, response.data);
+
 			// Update local state
 			setBlogs(prev => prev.map(blog =>
 				blog.id === blogId ? { ...blog, approved: 1 } : blog
 			));
 		} catch (err: any) {
-			console.error('Failed to approve blog:', err);
-			setError(err.response?.data?.error || 'Failed to approve blog');
+			console.error(`[AIBlogPage] Failed to approve blog ${blogId}:`, {
+				error: err,
+				response: err.response?.data,
+				status: err.response?.status
+			});
+			setError(err.response?.data?.error || 'Failed to approve blog. Admin access required.');
 		} finally {
 			setActionLoading(prev => ({ ...prev, [blogId]: false }));
 		}
