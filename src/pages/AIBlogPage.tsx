@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ShareIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ShareIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
+import { useAuth } from '../contexts/AuthContext';
 
 // Blog interface matching database structure
 interface Blog {
@@ -19,11 +20,15 @@ interface Blog {
 }
 
 export const AIBlogPage: React.FC = () => {
+	const { user } = useAuth();
+	const isAdmin = user?.role === 'ADMIN';
+
 	const [blogs, setBlogs] = useState<Blog[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [scraping, setScraping] = useState(false);
 	const [scrapingMessage, setScrapingMessage] = useState<string>('');
+	const [actionLoading, setActionLoading] = useState<Record<number, boolean>>({});
 
 	const [likedBlogs, setLikedBlogs] = useState<Set<number>>(new Set());
 	const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
@@ -35,17 +40,35 @@ export const AIBlogPage: React.FC = () => {
 	// Fetch blogs from backend
 	useEffect(() => {
 		fetchBlogs();
-	}, []);
+	}, [isAdmin]); // Refetch when admin status changes
 
 	const fetchBlogs = async () => {
 		try {
 			setLoading(true);
 			setError(null);
-			// Include unapproved blogs for testing (set to false in production)
-			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=true`);
+
+			// Log user authentication status
+			console.log('[AIBlogPage] Fetching blogs:', {
+				isAuthenticated: !!user,
+				userRole: user?.role,
+				isAdmin,
+				includeUnapproved: isAdmin ? 'true' : 'false'
+			});
+
+			// Admins can see unapproved blogs with includeUnapproved=true
+			// Regular users only see approved blogs (approved=1)
+			const includeUnapproved = isAdmin ? 'true' : 'false';
+			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=${includeUnapproved}`);
+
+			console.log('[AIBlogPage] Blogs fetched successfully:', response.data.data.blogs.length, 'blogs');
 			setBlogs(response.data.data.blogs);
 		} catch (err: any) {
-			console.error('Failed to fetch blogs:', err);
+			console.error('[AIBlogPage] Failed to fetch blogs:', {
+				error: err,
+				response: err.response?.data,
+				status: err.response?.status,
+				message: err.message
+			});
 			setError(err.response?.data?.error || 'Failed to load blogs');
 		} finally {
 			setLoading(false);
@@ -78,6 +101,39 @@ export const AIBlogPage: React.FC = () => {
 			setScrapingMessage('');
 		} finally {
 			setScraping(false);
+		}
+	};
+
+	const handleApproveBlog = async (blogId: number) => {
+		try {
+			setActionLoading(prev => ({ ...prev, [blogId]: true }));
+			await apiClient.patch(API_ENDPOINTS.BLOG_APPROVE(blogId));
+			// Update local state
+			setBlogs(prev => prev.map(blog =>
+				blog.id === blogId ? { ...blog, approved: 1 } : blog
+			));
+		} catch (err: any) {
+			console.error('Failed to approve blog:', err);
+			setError(err.response?.data?.error || 'Failed to approve blog');
+		} finally {
+			setActionLoading(prev => ({ ...prev, [blogId]: false }));
+		}
+	};
+
+	const handleRemoveBlog = async (blogId: number) => {
+		if (!confirm('Are you sure you want to delete this blog? This action cannot be undone.')) {
+			return;
+		}
+		try {
+			setActionLoading(prev => ({ ...prev, [blogId]: true }));
+			await apiClient.delete(API_ENDPOINTS.BLOG_DELETE(blogId));
+			// Remove from local state
+			setBlogs(prev => prev.filter(blog => blog.id !== blogId));
+		} catch (err: any) {
+			console.error('Failed to remove blog:', err);
+			setError(err.response?.data?.error || 'Failed to remove blog');
+		} finally {
+			setActionLoading(prev => ({ ...prev, [blogId]: false }));
 		}
 	};
 
@@ -232,105 +288,113 @@ export const AIBlogPage: React.FC = () => {
 													<div className="text-lg font-bold text-brand-accent uppercase">{selectedCard.platform}</div>
 													<div className="text-xs text-brand-secondary">Platform</div>
 												</div>
-											</div>
-										</div>
-
-										{/* Image */}
-										{selectedCard.image && (
-											<div className="mb-4 rounded-lg overflow-hidden">
-												<img
-													src={selectedCard.image}
-													alt={selectedCard.title}
-													className="w-full h-auto object-cover"
-													onError={(e) => { e.currentTarget.style.display = 'none'; }}
-												/>
-											</div>
-										)}
-
-										{/* Timestamp */}
-										<div className="flex items-center gap-2 text-brand-secondary text-sm mb-6">
-											<span>📅</span>
-											<span>{formatDate(selectedCard.createdAt)}</span>
-										</div>
-
-										{/* View Original Link */}
-										<a
-											href={selectedCard.link}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="inline-block px-6 py-3 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-all mb-6 font-semibold"
-										>
-											View Original Article →
-										</a>
-
-										{/* Action Buttons */}
-										<div className="flex items-center gap-3 pt-6 border-t border-brand-secondary/20">
-											<motion.button
-												onClick={() => toggleLike(selectedCard.id)}
-												whileHover={{ scale: 1.1 }}
-												whileTap={{ scale: 0.9 }}
-												className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
-											>
-												{likedBlogs.has(selectedCard.id) ? (
-													<HeartSolidIcon className="w-5 h-5 text-red-500" />
-												) : (
-													<HeartIcon className="w-5 h-5 text-brand-secondary group-hover:text-red-500 transition-colors" />
-												)}
-												<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Like</span>
-											</motion.button>
-
-											<motion.button
-												onClick={() => setCommentBoxOpen(commentBoxOpen === selectedCard.id ? null : selectedCard.id)}
-												whileHover={{ scale: 1.1 }}
-												whileTap={{ scale: 0.9 }}
-												className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
-											>
-												<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
-												<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Comment</span>
-											</motion.button>
-
-											<motion.button
-												onClick={() => handleShare(selectedCard.id)}
-												whileHover={{ scale: 1.1 }}
-												whileTap={{ scale: 0.9 }}
-												className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
-											>
-												<ShareIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
-												<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Repost</span>
-											</motion.button>
-										</div>
-
-										{/* Comment Box */}
-										<AnimatePresence>
-											{commentBoxOpen === selectedCard.id && (
-												<motion.div
-													initial={{ opacity: 0, height: 0 }}
-													animate={{ opacity: 1, height: 'auto' }}
-													exit={{ opacity: 0, height: 0 }}
-													transition={{ duration: 0.2 }}
-													className="mt-4 pt-4 border-t border-brand-secondary/20"
-												>
-													<div className="flex gap-2">
-														<input
-															type="text"
-															value={comments[selectedCard.id] || ''}
-															onChange={(e) => setComments(prev => ({ ...prev, [selectedCard.id]: e.target.value }))}
-															placeholder="Add a comment..."
-															className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none transition-all"
-															onKeyPress={(e) => e.key === 'Enter' && handleComment(selectedCard.id)}
-														/>
-														<motion.button
-															onClick={() => handleComment(selectedCard.id)}
-															whileHover={{ scale: 1.05 }}
-															whileTap={{ scale: 0.95 }}
-															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg font-semibold text-sm transition-all"
+												{/* Admin Controls in Modal */}
+												{isAdmin && (
+													<div className="flex flex-col gap-2">
+														{selectedCard.approved === 0 && (
+															<button
+																onClick={() => { handleApproveBlog(selectedCard.id); setSelectedCard(null); }}
+																disabled={actionLoading[selectedCard.id]}
+																className="flex items-center gap-1 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition-colors disabled:opacity-50"
+															>
+																<CheckIcon className="w-4 h-4" />
+																Publish
+															</button>
+														)}
+														{selectedCard.approved === 1 && (
+															<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold text-center">
+																Published
+															</span>
+														)}
+														<button
+															onClick={() => { handleRemoveBlog(selectedCard.id); setSelectedCard(null); }}
+															disabled={actionLoading[selectedCard.id]}
+															className="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-colors disabled:opacity-50"
 														>
-															Post
-														</motion.button>
+															<TrashIcon className="w-4 h-4" />
+															Remove
+														</button>
 													</div>
-												</motion.div>
-											)}
-										</AnimatePresence>
+												)}
+												<a
+													href={selectedCard.link}
+													target="_blank"
+													rel="noopener noreferrer"
+													className="inline-block px-6 py-3 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-all mb-6 font-semibold"
+												>
+													View Original Article →
+												</a>
+
+												{/* Action Buttons */}
+												<div className="flex items-center gap-3 pt-6 border-t border-brand-secondary/20">
+													<motion.button
+														onClick={() => toggleLike(selectedCard.id)}
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.9 }}
+														className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
+													>
+														{likedBlogs.has(selectedCard.id) ? (
+															<HeartSolidIcon className="w-5 h-5 text-red-500" />
+														) : (
+															<HeartIcon className="w-5 h-5 text-brand-secondary group-hover:text-red-500 transition-colors" />
+														)}
+														<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Like</span>
+													</motion.button>
+
+													<motion.button
+														onClick={() => setCommentBoxOpen(commentBoxOpen === selectedCard.id ? null : selectedCard.id)}
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.9 }}
+														className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
+													>
+														<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
+														<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Comment</span>
+													</motion.button>
+
+													<motion.button
+														onClick={() => handleShare(selectedCard.id)}
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.9 }}
+														className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-all group"
+													>
+														<ShareIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
+														<span className="text-xs text-brand-secondary group-hover:text-white transition-colors">Repost</span>
+													</motion.button>
+												</div>
+
+												{/* Comment Box */}
+												<AnimatePresence>
+													{commentBoxOpen === selectedCard.id && (
+														<motion.div
+															initial={{ opacity: 0, height: 0 }}
+															animate={{ opacity: 1, height: 'auto' }}
+															exit={{ opacity: 0, height: 0 }}
+															transition={{ duration: 0.2 }}
+															className="mt-4 pt-4 border-t border-brand-secondary/20"
+														>
+															<div className="flex gap-2">
+																<input
+																	type="text"
+																	value={comments[selectedCard.id] || ''}
+																	onChange={(e) => setComments(prev => ({ ...prev, [selectedCard.id]: e.target.value }))}
+																	placeholder="Add a comment..."
+																	className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none transition-all"
+																	onKeyPress={(e) => e.key === 'Enter' && handleComment(selectedCard.id)}
+																/>
+																<motion.button
+																	onClick={() => handleComment(selectedCard.id)}
+																	whileHover={{ scale: 1.05 }}
+																	whileTap={{ scale: 0.95 }}
+																	className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg font-semibold text-sm transition-all"
+																>
+																	Post
+																</motion.button>
+															</div>
+														</motion.div>
+													)}
+												</AnimatePresence>
+											</div>
+										</div>
 									</motion.div>
 								</div>
 							</div>
@@ -406,13 +470,57 @@ export const AIBlogPage: React.FC = () => {
 										viewport={{ once: true }}
 										onClick={() => setSelectedCard(blog)}
 										className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
-									>
-										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
+									>									{/* Admin Controls */}
+										{isAdmin && (
+											<div className="flex items-center justify-end gap-2 mb-3">
+												{blog.approved === 0 && (
+													<button
+														onClick={(e) => { e.stopPropagation(); handleApproveBlog(blog.id); }}
+														disabled={actionLoading[blog.id]}
+														className="flex items-center gap-1 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition-colors disabled:opacity-50"
+													>
+														<CheckIcon className="w-4 h-4" />
+														Publish
+													</button>
+												)}
+												{blog.approved === 1 && (
+													<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
+														Published
+													</span>
+												)}
+												<button
+													onClick={(e) => { e.stopPropagation(); handleRemoveBlog(blog.id); }}
+													disabled={actionLoading[blog.id]}
+													className="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-colors disabled:opacity-50"
+												>
+													<TrashIcon className="w-4 h-4" />
+													Remove
+												</button>
+											</div>
+										)}										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
 										<p className="text-brand-secondary text-sm mb-3 line-clamp-2">{blog.description}</p>
 										<span className="text-xs text-brand-accent uppercase">{blog.platform}</span>
 										{blog.image && (
-											<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+											<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
 										)}
+
+										{/* User Operations */}
+										<div className="flex items-center gap-4 pt-3 border-t border-brand-secondary/20">
+											<button
+												onClick={(e) => { e.stopPropagation(); toggleLike(blog.id); }}
+												className="flex items-center gap-2 text-brand-secondary hover:text-brand-accent transition-colors"
+											>
+												{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5" />}
+												<span className="text-xs">Like</span>
+											</button>
+											<button
+												onClick={(e) => { e.stopPropagation(); setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id); }}
+												className="flex items-center gap-2 text-brand-secondary hover:text-brand-accent transition-colors"
+											>
+												<ChatBubbleLeftIcon className="w-5 h-5" />
+												<span className="text-xs">Comment</span>
+											</button>
+										</div>
 									</motion.div>
 								);
 							}
@@ -430,7 +538,37 @@ export const AIBlogPage: React.FC = () => {
 									<div className="p-6">
 										<div className="flex items-start justify-between mb-4">
 											<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
-											<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase ml-3">{blog.platform}</span>
+											<div className="flex items-center gap-2 ml-3">
+												<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span>
+												{/* Admin Controls */}
+												{isAdmin && (
+													<>
+														{blog.approved === 0 && (
+															<button
+																onClick={() => handleApproveBlog(blog.id)}
+																disabled={actionLoading[blog.id]}
+																className="flex items-center gap-1 px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg text-xs font-semibold hover:bg-green-500/30 transition-colors disabled:opacity-50"
+															>
+																<CheckIcon className="w-4 h-4" />
+																Publish
+															</button>
+														)}
+														{blog.approved === 1 && (
+															<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
+																Published
+															</span>
+														)}
+														<button
+															onClick={() => handleRemoveBlog(blog.id)}
+															disabled={actionLoading[blog.id]}
+															className="flex items-center gap-1 px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/30 transition-colors disabled:opacity-50"
+														>
+															<TrashIcon className="w-4 h-4" />
+															Remove
+														</button>
+													</>
+												)}
+											</div>
 										</div>
 										<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
 										<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
@@ -464,18 +602,14 @@ export const AIBlogPage: React.FC = () => {
 												<a href={blog.link} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 bg-brand-accent text-white rounded-lg mb-4 font-semibold">
 													View Original Article →
 												</a>
-												<div className="flex items-center justify-center gap-2 pt-4 border-t border-brand-secondary/20">
-													<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
+												<div className="flex items-center justify-center gap-4 pt-4 border-t border-brand-secondary/20">
+													<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors">
 														{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5 text-brand-secondary" />}
-														<span className="text-xs text-brand-secondary">Like</span>
+														<span className="text-sm text-brand-secondary">Like</span>
 													</button>
-													<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
+													<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors">
 														<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
-														<span className="text-xs text-brand-secondary">Comment</span>
-													</button>
-													<button onClick={() => handleShare(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10">
-														<ShareIcon className="w-5 h-5 text-brand-secondary" />
-														<span className="text-xs text-brand-secondary">Repost</span>
+														<span className="text-sm text-brand-secondary">Comment</span>
 													</button>
 												</div>
 												<AnimatePresence>

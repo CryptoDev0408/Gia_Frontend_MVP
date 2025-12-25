@@ -21,6 +21,8 @@ export const API_ENDPOINTS = {
 	// Blogs endpoints
 	BLOGS: `${API_BASE_URL}/blogs`,
 	BLOGS_SCRAPE: `${API_BASE_URL}/blogs/scrape`,
+	BLOG_APPROVE: (id: number) => `${API_BASE_URL}/blogs/${id}/approve`,
+	BLOG_DELETE: (id: number) => `${API_BASE_URL}/blogs/${id}`,
 
 	// Admin endpoints
 	ADMIN_SCRAPE_FASHION: `${API_BASE_URL}/admin/scrape/fashion`,
@@ -58,28 +60,34 @@ apiClient.interceptors.response.use(
 		const originalRequest = error.config;
 
 		// If 401 and not already retried, try to refresh token
+		// Only attempt refresh if we actually had a token (authenticated request)
 		if (error.response?.status === 401 && !originalRequest._retry) {
-			originalRequest._retry = true;
+			const hasToken = localStorage.getItem('accessToken');
 
-			try {
-				const refreshToken = localStorage.getItem('refreshToken');
-				if (refreshToken) {
-					const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-						refreshToken,
-					});
+			// Only try to refresh if we had a token in the first place
+			if (hasToken) {
+				originalRequest._retry = true;
 
-					const { accessToken } = response.data.data;
-					localStorage.setItem('accessToken', accessToken);
+				try {
+					const refreshToken = localStorage.getItem('refreshToken');
+					if (refreshToken) {
+						const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
+							refreshToken,
+						});
 
-					originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-					return apiClient(originalRequest);
+						const { accessToken } = response.data.data;
+						localStorage.setItem('accessToken', accessToken);
+
+						originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+						return apiClient(originalRequest);
+					}
+				} catch (refreshError) {
+					// Refresh failed, clear auth data
+					localStorage.removeItem('accessToken');
+					localStorage.removeItem('refreshToken');
+					localStorage.removeItem('user');
+					window.location.href = '/login';
 				}
-			} catch (refreshError) {
-				// Refresh failed, clear auth data
-				localStorage.removeItem('accessToken');
-				localStorage.removeItem('refreshToken');
-				localStorage.removeItem('user');
-				window.location.href = '/login';
 			}
 		}
 
