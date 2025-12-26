@@ -1,7 +1,7 @@
 export const SOCIAL_LINKS = {
-  telegram: 'https://t.me',
-  discord: 'https://discord.gg',
-  twitter: 'https://x.com'
+  telegram: 'https://t.me/GIA_FashionOfficial',
+  discord: 'https://discord.gg/Hz9h2Gsa',
+  twitter: 'https://x.com/GIAFashionAI'
 } as const;
 
 export const NETWORKS = {
@@ -35,16 +35,16 @@ export const CONTRACT_ADDRESSES = {
 export const CDN_LIBRARIES = {
   // Ethers.js v6
   ETHERS: '<!-- <script src="https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js"></script> -->',
-  
+
   // Viem (modern alternative)
   VIEM: '<!-- <script type="module">import { createPublicClient, http } from "https://esm.sh/viem@latest"</script> -->',
-  
+
   // Web3Modal (wallet connection)
   WEB3MODAL: '<!-- <script type="module">import { EthereumProvider } from "https://unpkg.com/@walletconnect/ethereum-provider@latest"</script> -->',
-  
+
   // Chart.js for future analytics
   CHART_JS: '<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js@latest"></script> -->',
-  
+
   // Web3.js (legacy)
   WEB3: '<!-- <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script> -->'
 } as const;

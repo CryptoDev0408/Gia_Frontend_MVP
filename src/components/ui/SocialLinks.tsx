@@ -17,8 +17,11 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = '' }) => {
   return (
     <div className={`flex items-center justify-center space-x-4 ${className}`}>
       {socials.map((social, index) => (
-        <motion.div
+        <motion.a
           key={social.url}
+          href={social.url}
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
@@ -31,10 +34,8 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = '' }) => {
             bgColor="#FFFFFFCC"
             fgColor="#0e151d"
             style={{ height: 48, width: 48 }}
-            target="_blank"
-            rel="noopener noreferrer"
           />
-        </motion.div>
+        </motion.a>
       ))}
     </div>
   );

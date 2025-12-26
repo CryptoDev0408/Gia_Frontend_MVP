@@ -228,6 +228,12 @@ export const AIBlogPage: React.FC = () => {
 	};
 
 	const handleComment = (blogId: number) => {
+		// Check if user is authenticated
+		if (!user) {
+			alert('Please log in to comment on articles');
+			return;
+		}
+
 		const comment = comments[blogId];
 		if (comment?.trim()) {
 			console.log('Comment submitted:', { blogId, comment });
@@ -236,6 +242,20 @@ export const AIBlogPage: React.FC = () => {
 			setComments(prev => ({ ...prev, [blogId]: '' }));
 			setCommentBoxOpen(null);
 		}
+	};
+
+	const handleCommentButtonClick = (blogId: number, e?: React.MouseEvent) => {
+		if (e) {
+			e.stopPropagation();
+		}
+
+		// Check if user is authenticated
+		if (!user) {
+			alert('Please log in to comment on articles');
+			return;
+		}
+
+		setCommentBoxOpen(commentBoxOpen === blogId ? null : blogId);
 	};
 
 	const formatDate = (dateString: string) => {
@@ -416,8 +436,7 @@ export const AIBlogPage: React.FC = () => {
 											</motion.button>
 
 											<motion.button
-												onClick={() => setCommentBoxOpen(commentBoxOpen === selectedCard.id ? null : selectedCard.id)}
-												whileHover={{ scale: 1.1 }}
+												onClick={() => handleCommentButtonClick(selectedCard.id)}
 												whileTap={{ scale: 0.9 }}
 												className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-transparent to-transparent hover:from-brand-accent/20 hover:to-blue-500/20 border border-brand-secondary/30 hover:border-brand-accent/50 transition-all duration-300 group shadow-md hover:shadow-brand-accent/30 cursor-pointer"
 											>
@@ -634,7 +653,7 @@ export const AIBlogPage: React.FC = () => {
 												</span>
 											</button>
 											<button
-												onClick={(e) => { e.stopPropagation(); setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id); }}
+												onClick={(e) => handleCommentButtonClick(blog.id, e)}
 												className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
 											>
 												<ChatBubbleLeftIcon className="w-5 h-5" />
@@ -744,7 +763,7 @@ export const AIBlogPage: React.FC = () => {
 															{likeLoading[blog.id] ? 'Loading...' : `Like (${blog.likesCount})`}
 														</span>
 													</button>
-													<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
+													<button onClick={() => handleCommentButtonClick(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
 														<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
 														<span className="text-sm text-brand-secondary">Comment</span>
 													</button>
