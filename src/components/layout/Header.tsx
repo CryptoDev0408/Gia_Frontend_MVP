@@ -137,7 +137,11 @@ export const Header: React.FC = () => {
               </a>
             ))}
             {/* AI Blog Link */}
-            <Link to="/ai-blog" className="text-white hover:text-brand-accent transition-colors font-semibold">
+            <Link
+              to="/ai-blog"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="text-white hover:text-brand-accent transition-colors font-semibold"
+            >
               AI Blog
             </Link>
           </nav>
@@ -149,17 +153,17 @@ export const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 text-white hover:text-brand-accent transition-colors"
+                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-500/50 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20"
                 >
-                  <UserCircleIcon className="h-8 w-8" />
-                  <span className="text-sm">{user.username || user.email}</span>
+                  <UserCircleIcon className="h-8 w-8 text-purple-400" />
+                  <span className="text-sm font-semibold text-white">{user.username || user.email}</span>
                 </button>
 
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-[#0e151d] border border-brand-secondary/20 rounded-lg shadow-xl py-2">
-                    <div className="px-4 py-2 border-b border-brand-secondary/20">
-                      <p className="text-xs text-gray-400">Signed in as</p>
-                      <p className="text-sm text-white truncate">{user.email || user.username}</p>
+                  <div className="absolute right-0 mt-2 w-56 bg-gradient-to-b from-[#0e151d] to-[#1a1f2e] border border-purple-500/30 rounded-xl shadow-2xl shadow-purple-500/10 py-2 backdrop-blur-xl">
+                    <div className="px-4 py-3 border-b border-purple-500/20">
+                      <p className="text-xs text-gray-400 mb-1">Signed in as</p>
+                      <p className="text-sm text-white font-semibold truncate">{user.email || user.username}</p>
                     </div>
                     <button
                       onClick={() => {
@@ -167,9 +171,12 @@ export const Header: React.FC = () => {
                         setShowUserMenu(false);
                         navigate('/');
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-white hover:bg-brand-secondary/20 transition-colors"
+                      className="w-full text-left px-4 py-3 text-sm text-white hover:bg-purple-500/20 transition-all duration-200 font-medium flex items-center space-x-2"
                     >
-                      Sign Out
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 )}
