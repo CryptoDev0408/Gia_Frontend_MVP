@@ -144,6 +144,16 @@ export const Header: React.FC = () => {
             >
               AI Blog
             </Link>
+            {/* Users Link - Admin Only */}
+            {isAuthenticated && user?.role === 'ADMIN' && (
+              <Link
+                to="/users"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="text-white hover:text-brand-accent transition-colors cursor-pointer"
+              >
+                Users
+              </Link>
+            )}
           </nav>
 
           {/* Connect Wallet / Auth Buttons */}

@@ -25,6 +25,9 @@ export const API_ENDPOINTS = {
 	BLOG_DELETE: (id: number) => `${API_BASE_URL}/blogs/${id}`,
 	BLOG_LIKE: (id: number) => `${API_BASE_URL}/blogs/${id}/like`,
 
+	// Users endpoints (Admin only)
+	USERS: `${API_BASE_URL}/users`,
+
 	// Admin endpoints
 	ADMIN_SCRAPE_FASHION: `${API_BASE_URL}/admin/scrape/fashion`,
 	ADMIN_INSIGHTS: `${API_BASE_URL}/admin/insights`,

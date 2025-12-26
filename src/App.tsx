@@ -12,6 +12,7 @@ import { JoinRevolution } from './components/sections/JoinRevolution';
 import PrivacyPage from './pages/PrivacyPage';
 import PolicyPage from './pages/PolicyPage';
 import AIBlogPage from './pages/AIBlogPage';
+import { UsersPage } from './pages/UsersPage';
 import './index.css';
 
 // Add window.ethereum type declarations
@@ -50,6 +51,9 @@ function App() {
 
               {/* AI Blog Page */}
               <Route path="/ai-blog" element={<AIBlogPage />} />
+
+              {/* Users Management Page (Admin Only) */}
+              <Route path="/users" element={<UsersPage />} />
 
               {/* Separate Pages */}
               <Route path="/privacy" element={<PrivacyPage />} />
