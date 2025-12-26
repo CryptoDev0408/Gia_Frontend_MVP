@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
 
 const LoginPage: React.FC = () => {
 	const [isLogin, setIsLogin] = useState(true);
@@ -9,7 +8,7 @@ const LoginPage: React.FC = () => {
 	const [password, setPassword] = useState('');
 	const [username, setUsername] = useState('');
 	const [error, setError] = useState('');
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 
 	const { login, register } = useAuth();
 	const navigate = useNavigate();
@@ -17,7 +16,7 @@ const LoginPage: React.FC = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError('');
-		setIsLoading(true);
+		// setIsLoading(true);
 
 		try {
 			if (isLogin) {
@@ -29,7 +28,7 @@ const LoginPage: React.FC = () => {
 		} catch (err: any) {
 			setError(err.message || 'Authentication failed');
 		} finally {
-			setIsLoading(false);
+			// setIsLoading(false);
 		}
 	};
 
