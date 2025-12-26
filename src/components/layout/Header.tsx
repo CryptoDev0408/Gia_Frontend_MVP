@@ -192,13 +192,12 @@ export const Header: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Button
+              <button
                 onClick={() => openAuthModal('login')}
-                variant="outline"
-                className="min-w-[100px] font-small"
+                className="text-white hover:text-brand-accent transition-colors cursor-pointer bg-transparent border-none p-0 font-normal text-base"
               >
                 Sign In
-              </Button>
+              </button>
             )}
 
             {/* Wallet Connect Button */}

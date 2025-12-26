@@ -479,7 +479,7 @@ export const AIBlogPage: React.FC = () => {
 											</div>
 
 											{/* Row 2: Read Article (on mobile: full row, on desktop: right side) */}
-											<motion.a
+											{/* <motion.a
 												href={selectedCard.link}
 												target="_blank"
 												rel="noopener noreferrer"
@@ -498,7 +498,7 @@ export const AIBlogPage: React.FC = () => {
 											>
 												<span>Read Article</span>
 												<span>→</span>
-											</motion.a>
+											</motion.a> */}
 										</div>
 
 										{/* Comment Box */}
@@ -710,7 +710,7 @@ export const AIBlogPage: React.FC = () => {
 													<span className="text-xs font-semibold">Comment</span>
 												</button>
 												<div className="flex-1"></div>
-												<a
+												{/* <a
 													href={blog.link}
 													target="_blank"
 													rel="noopener noreferrer"
@@ -728,7 +728,7 @@ export const AIBlogPage: React.FC = () => {
 												>
 													<span>Read Article</span>
 													<span>→</span>
-												</a>
+												</a> */}
 											</div>
 										</motion.div>
 									);
