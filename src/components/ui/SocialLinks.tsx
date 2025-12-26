@@ -12,6 +12,8 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = '' }) => {
     { url: SOCIAL_LINKS.telegram, network: 'telegram' },
     { url: SOCIAL_LINKS.discord, network: 'discord' },
     { url: SOCIAL_LINKS.twitter, network: 'x' },
+    { url: SOCIAL_LINKS.instagram, network: 'instagram' },
+    { url: SOCIAL_LINKS.linkedin, network: 'linkedin' },
   ];
 
   return (

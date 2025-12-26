@@ -92,7 +92,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
         {/* AI Blog Link */}
         <Link
           to="/ai-blog"
-          className="block text-white hover:text-brand-accent transition-colors text-center font-semibold"
+          className="block text-white hover:text-brand-accent transition-colors text-center"
           onClick={() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             onClose();

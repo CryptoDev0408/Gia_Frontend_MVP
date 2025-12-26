@@ -344,7 +344,7 @@ export const AIBlogPage: React.FC = () => {
 										className="flex items-center gap-2 mb-6 text-brand-accent hover:text-white transition-colors"
 									>
 										<ArrowLeftIcon className="w-5 h-5" />
-										<span className="font-semibold">Back to Trends</span>
+										<span>Back to Trends</span>
 									</motion.button>
 
 									{/* Full Card Detail */}
@@ -356,8 +356,8 @@ export const AIBlogPage: React.FC = () => {
 										{/* Title and Top Actions */}
 										<div className="flex items-start justify-between mb-6">
 											<div className="flex-1">
-												<h2 className="text-3xl font-bold text-gradient mb-3">{selectedCard.title}</h2>
-												<div className="px-4 py-2 bg-black text-white font-bold rounded-lg uppercase text-sm hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg inline-block">
+												<h2 className="text-3xl text-gradient mb-3">{selectedCard.title}</h2>
+												<div className="px-4 py-2 bg-black text-white rounded-lg uppercase text-sm hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg inline-block">
 													{selectedCard.platform}
 												</div>
 											</div>
@@ -369,21 +369,21 @@ export const AIBlogPage: React.FC = () => {
 														<button
 															onClick={() => { handleApproveBlog(selectedCard.id); setSelectedCard(null); }}
 															disabled={actionLoading[selectedCard.id]}
-															className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-sm font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
+															className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-sm hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
 														>
 															<CheckIcon className="w-5 h-5" />
 															Publish
 														</button>
 													)}
 													{selectedCard.approved === 1 && (
-														<span className="px-4 py-2 bg-brand-accent/20 text-brand-accent rounded-lg text-sm font-semibold">
+														<span className="px-4 py-2 bg-brand-accent/20 text-brand-accent rounded-lg text-sm">
 															Published
 														</span>
 													)}
 													<button
 														onClick={() => { handleRemoveBlog(selectedCard.id); setSelectedCard(null); }}
 														disabled={actionLoading[selectedCard.id]}
-														className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-sm font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
+														className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-sm hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
 													>
 														<TrashIcon className="w-5 h-5" />
 														Remove
@@ -394,7 +394,7 @@ export const AIBlogPage: React.FC = () => {
 
 										{/* AI Insight */}
 										<div className="mb-6">
-											<p className="text-xs text-brand-accent font-semibold mb-1">AI INSIGHT</p>
+											<p className="text-xs text-brand-accent mb-1">AI INSIGHT</p>
 											<p className="text-sm text-white leading-relaxed line-clamp-2">{selectedCard.ai_insight}</p>
 										</div>
 
@@ -430,7 +430,7 @@ export const AIBlogPage: React.FC = () => {
 												) : (
 													<HeartIcon className="w-5 h-5 text-brand-secondary group-hover:text-red-500 transition-colors" />
 												)}
-												<span className="text-sm font-semibold text-brand-secondary group-hover:text-white transition-colors">
+												<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">
 													{likeLoading[selectedCard.id] ? 'Loading...' : `Like (${selectedCard.likesCount})`}
 												</span>
 											</motion.button>
@@ -441,7 +441,7 @@ export const AIBlogPage: React.FC = () => {
 												className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-transparent to-transparent hover:from-brand-accent/20 hover:to-blue-500/20 border border-brand-secondary/30 hover:border-brand-accent/50 transition-all duration-300 group shadow-md hover:shadow-brand-accent/30 cursor-pointer"
 											>
 												<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
-												<span className="text-sm font-semibold text-brand-secondary group-hover:text-white transition-colors">Comment</span>
+												<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">Comment</span>
 											</motion.button>
 
 											{/* Spacer to push Original to the right */}
@@ -453,7 +453,7 @@ export const AIBlogPage: React.FC = () => {
 												rel="noopener noreferrer"
 												whileHover={{ scale: 1.05 }}
 												whileTap={{ scale: 0.95 }}
-												className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-accent to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-brand-accent transition-all duration-300 font-bold text-sm shadow-xl hover:shadow-2xl hover:shadow-brand-accent/50"
+												className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-brand-accent to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-brand-accent transition-all duration-300 text-sm shadow-xl hover:shadow-2xl hover:shadow-brand-accent/50"
 											>
 												<span>Original</span>
 												<span>→</span>
@@ -483,7 +483,7 @@ export const AIBlogPage: React.FC = () => {
 															onClick={() => handleComment(selectedCard.id)}
 															whileHover={{ scale: 1.05 }}
 															whileTap={{ scale: 0.95 }}
-															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg font-semibold text-sm transition-all"
+															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm transition-all"
 														>
 															Post
 														</motion.button>
@@ -506,7 +506,7 @@ export const AIBlogPage: React.FC = () => {
 					<div className="flex flex-wrap gap-3 justify-center items-center mb-6">
 						<button
 							onClick={() => setBlogFilter('draft')}
-							className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
+							className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
 								? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
 								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 								}`}
@@ -515,7 +515,7 @@ export const AIBlogPage: React.FC = () => {
 						</button>
 						<button
 							onClick={() => setBlogFilter('published')}
-							className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'published'
+							className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'published'
 								? 'bg-green-500/20 text-green-400 border border-green-500/50'
 								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 								}`}
@@ -524,7 +524,7 @@ export const AIBlogPage: React.FC = () => {
 						</button>
 						<button
 							onClick={() => setBlogFilter('all')}
-							className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'all'
+							className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'all'
 								? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
 								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 								}`}
@@ -544,7 +544,7 @@ export const AIBlogPage: React.FC = () => {
 								disabled={scraping}
 								whileHover={{ scale: scraping ? 1 : 1.05 }}
 								whileTap={{ scale: scraping ? 1 : 0.95 }}
-								className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all select-none ${scraping
+								className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${scraping
 									? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
 									: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400 cursor-pointer border border-brand-accent/50'
 									}`}
@@ -560,7 +560,7 @@ export const AIBlogPage: React.FC = () => {
 							disabled={loading || scraping}
 							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
 							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all select-none ${loading || scraping
+							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${loading || scraping
 								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
 								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
 								}`}
@@ -634,8 +634,8 @@ export const AIBlogPage: React.FC = () => {
 													Remove
 												</button>
 											</div>
-										)}										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
-										<span className="inline-block px-3 py-1.5 bg-black text-white font-bold rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md mb-3">{blog.platform}</span>
+										)}										<h2 className="text-xl text-gradient mb-3">{blog.title}</h2>
+										<span className="inline-block px-3 py-1.5 bg-black text-white rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md mb-3">{blog.platform}</span>
 										{blog.image && (
 											<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
 										)}

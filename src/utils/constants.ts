@@ -1,7 +1,9 @@
 export const SOCIAL_LINKS = {
   telegram: 'https://t.me/GIA_FashionOfficial',
-  discord: 'https://discord.gg/Hz9h2Gsa',
-  twitter: 'https://x.com/GIAFashionAI'
+  discord: 'https://discord.gg/FrmzKNAc3',
+  twitter: 'https://x.com/GIAFashionAI',
+  instagram: 'https://www.instagram.com/gia_ai_fashion/',
+  linkedin: 'https://linked.com'
 } as const;
 
 export const NETWORKS = {

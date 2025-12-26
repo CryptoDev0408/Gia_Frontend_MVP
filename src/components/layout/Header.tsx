@@ -140,7 +140,7 @@ export const Header: React.FC = () => {
             <Link
               to="/ai-blog"
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="text-white hover:text-brand-accent transition-colors font-semibold"
+              className="text-white hover:text-brand-accent transition-colors cursor-pointer"
             >
               AI Blog
             </Link>
