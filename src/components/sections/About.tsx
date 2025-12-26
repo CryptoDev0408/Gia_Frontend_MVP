@@ -81,7 +81,7 @@ export const About: React.FC = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-brand-accent via-brand-secondary to-brand-accent rounded-2xl blur-sm opacity-25 transition duration-1000" />
               <div className="relative rounded-xl overflow-hidden" style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
                 <iframe
-                  src="https://fast.wistia.net/embed/iframe/bqn716n68w?videoFoam=true&autoPlay=true&muted=true&playsinline=true"
+                  src="https://fast.wistia.net/embed/iframe/bqn716n68w?videoFoam=true&autoPlay=true&muted=false&playsinline=true"
                   title="GIA Fashion Video"
                   allow="autoplay; fullscreen"
                   allowFullScreen
