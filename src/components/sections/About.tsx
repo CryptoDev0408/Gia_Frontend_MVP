@@ -7,7 +7,7 @@ export const About: React.FC = () => {
   const [aboutData, setAboutData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
+  useEffect(() => {
     // ✅ Check if data exists in localStorage
     const cachedData = localStorage.getItem("aboutData");
     if (cachedData) {
@@ -57,20 +57,47 @@ export const About: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-brand-bg/80 via-brand-bg/60 to-transparent" />
 
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Section Header */}
+        {/* Section Header - 2 Column Layout */}
         <motion.div
-          className="text-center mb-16"
+          className="mb-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-3xl md:text-3xl text-gradient mb-6 leading-tight">
-            {aboutData?.title}
-          </h2>
-          <p className="text-md md:text-md text-brand-secondary max-w-5xl mx-auto leading-relaxed">
-            {aboutData?.description}
-          </p>
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            {/* Left Column - Text */}
+            <div className="text-left">
+              <h2 className="text-3xl md:text-3xl text-gradient mb-6 leading-tight">
+                {aboutData?.title}
+              </h2>
+              <p className="text-md md:text-md text-brand-secondary leading-relaxed">
+                {aboutData?.description}
+              </p>
+            </div>
+
+            {/* Right Column - Wistia Video */}
+            <div className="relative w-full">
+              <div className="absolute -inset-1 bg-gradient-to-r from-brand-accent via-brand-secondary to-brand-accent rounded-2xl blur-sm opacity-25 transition duration-1000" />
+              <div className="relative rounded-xl overflow-hidden" style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
+                <iframe
+                  src="https://fast.wistia.net/embed/iframe/bqn716n68w?videoFoam=true&autoPlay=true&muted=true&playsinline=true"
+                  title="GIA Fashion Video"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    border: 0
+                  }}
+                />
+              </div>
+              <script src="https://fast.wistia.net/assets/external/E-v1.js" async />
+            </div>
+          </div>
         </motion.div>
 
         {/* Services */}
@@ -180,40 +207,40 @@ export const About: React.FC = () => {
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-brand-accent via-brand-secondary to-brand-accent rounded-2xl blur-sm opacity-25 transition duration-1000" />
           <div className="relative">
-            <img 
-              src="/gia-heros-1280x853.jpg" 
-              alt="GIA Technology" 
+            <img
+              src="/gia-heros-1280x853.jpg"
+              alt="GIA Technology"
               className="w-full h-auto object-cover rounded-xl"
               style={{ maxHeight: 'calc(853px * 0.66)' }}
             />
             <motion.div
-  className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
-  initial={{ opacity: 0 }}
-  whileInView={{ opacity: 1 }}
-  transition={{ delay: 0.5, duration: 0.6 }}
-  viewport={{ once: true }}
->
-  {aboutData?.learn_more?.text && aboutData?.learn_more?.link && (
-    <Button
-      size="lg"
-      variant="translucent"
-      onClick={() => window.open(aboutData.learn_more.link, '_blank')}
-      className="min-w-[200px] opacity-80 learn-more"
-    >
-      {aboutData.learn_more.text}
+              className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              {aboutData?.learn_more?.text && aboutData?.learn_more?.link && (
+                <Button
+                  size="lg"
+                  variant="translucent"
+                  onClick={() => window.open(aboutData.learn_more.link, '_blank')}
+                  className="min-w-[200px] opacity-80 learn-more"
+                >
+                  {aboutData.learn_more.text}
 
-      <>
-    <style>
-      {`
+                  <>
+                    <style>
+                      {`
         .learn-more {
           font-weight: 200;
       }
       `}
-    </style>
-  </>
-    </Button>
-  )}
-</motion.div>
+                    </style>
+                  </>
+                </Button>
+              )}
+            </motion.div>
 
           </div>
         </motion.div>
