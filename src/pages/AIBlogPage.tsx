@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ShareIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -36,6 +36,7 @@ export const AIBlogPage: React.FC = () => {
 	const [comments, setComments] = useState<Record<number, string>>({});
 	const [viewMode] = useState<'row' | 'grid'>('grid'); // Fixed to grid layout
 	const [selectedCard, setSelectedCard] = useState<Blog | null>(null);
+	const [blogFilter, setBlogFilter] = useState<'all' | 'draft' | 'published'>('all'); // Admin filter
 
 	// Fetch blogs from backend
 	useEffect(() => {
@@ -207,6 +208,15 @@ export const AIBlogPage: React.FC = () => {
 		return date.toLocaleDateString();
 	};
 
+	// Filter blogs based on admin filter selection
+	const filteredBlogs = isAdmin
+		? blogs.filter(blog => {
+			if (blogFilter === 'draft') return blog.approved === 0;
+			if (blogFilter === 'published') return blog.approved === 1;
+			return true; // 'all'
+		})
+		: blogs.filter(blog => blog.approved === 1); // Regular users only see published
+
 	if (loading) {
 		return (
 			<div className="min-h-screen bg-brand-bg pt-20 flex items-center justify-center">
@@ -323,9 +333,9 @@ export const AIBlogPage: React.FC = () => {
 													<button
 														onClick={() => { handleApproveBlog(selectedCard.id); setSelectedCard(null); }}
 														disabled={actionLoading[selectedCard.id]}
-													className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-sm font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
-												>
-													<CheckIcon className="w-5 h-5" />
+														className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-sm font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
+													>
+														<CheckIcon className="w-5 h-5" />
 														Publish
 													</button>
 												)}
@@ -337,9 +347,9 @@ export const AIBlogPage: React.FC = () => {
 												<button
 													onClick={() => { handleRemoveBlog(selectedCard.id); setSelectedCard(null); }}
 													disabled={actionLoading[selectedCard.id]}
-												className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-sm font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
-											>
-												<TrashIcon className="w-5 h-5" />
+													className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-sm font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-lg hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
+												>
+													<TrashIcon className="w-5 h-5" />
 													Remove
 												</button>
 											</div>
@@ -427,257 +437,294 @@ export const AIBlogPage: React.FC = () => {
 			</AnimatePresence>
 
 			{/* Main Content */}
-			< section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" >
-				{/* Action Buttons - Right Aligned */}
-				< div className="flex items-center justify-end gap-3 mb-6" >
-					{/* Scraping Button - Admin Only */}
+			<section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				{/* Action Buttons - Responsive Layout */}
+				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+					{/* Admin Filter Buttons - Left Side */}
 					{isAdmin && (
-						< motion.button
-							onClick={handleScraping}
-							disabled={scraping}
-							whileHover={{ scale: scraping ? 1 : 1.05 }}
-							whileTap={{ scale: scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${scraping
-								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
-								: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400'
-								}`}
-						>
-							<BoltIcon className={`w-5 h-5 ${scraping ? 'animate-pulse' : ''}`} />
-							{scraping ? 'Scraping...' : 'Start Scraping'}
-						</motion.button >
+						<div className="flex items-center gap-2 flex-wrap">
+							<button
+								onClick={() => setBlogFilter('draft')}
+								className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
+									? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/50'
+									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
+									}`}
+							>
+								Draft ({blogs.filter(b => b.approved === 0).length})
+							</button>
+							<button
+								onClick={() => setBlogFilter('published')}
+								className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'published'
+									? 'bg-green-500/20 text-green-400 border border-green-500/50'
+									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
+									}`}
+							>
+								Published ({blogs.filter(b => b.approved === 1).length})
+							</button>
+							<button
+								onClick={() => setBlogFilter('all')}
+								className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer select-none ${blogFilter === 'all'
+									? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
+									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
+									}`}
+							>
+								All Blogs ({blogs.length})
+							</button>
+						</div>
 					)}
 
-					{/* Refresh Button */}
-					< motion.button
-						onClick={fetchBlogs}
-						disabled={loading || scraping}
-						whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
-						whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
-						className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all ${loading || scraping
-							? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed'
-							: 'bg-brand-secondary/20 text-white hover:bg-brand-secondary/30 border border-brand-secondary/30 cursor-pointer'
-							}`}
-					>
-						<ArrowPathIcon className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-						Refresh
-					</motion.button >
-				</div >
+					{/* Right Side Buttons */}
+					<div className="flex items-center gap-3 flex-wrap">
+						{/* Scraping Button - Admin Only */}
+						{isAdmin && (
+							<motion.button
+								onClick={handleScraping}
+								disabled={scraping}
+								whileHover={{ scale: scraping ? 1 : 1.05 }}
+								whileTap={{ scale: scraping ? 1 : 0.95 }}
+								className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all select-none ${scraping
+									? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
+									: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400 cursor-pointer border border-brand-accent/50'
+									}`}
+							>
+								<BoltIcon className={`w-4 h-4 ${scraping ? 'animate-pulse' : ''}`} />
+								{scraping ? 'Scraping...' : 'Start Scraping'}
+							</motion.button>
+						)}
+
+						{/* Refresh Button */}
+						<motion.button
+							onClick={fetchBlogs}
+							disabled={loading || scraping}
+							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
+							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
+							className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all select-none ${loading || scraping
+								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
+								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
+								}`}
+						>
+							<ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+							Refresh
+						</motion.button>
+					</div>
+				</div>
 
 				{/* Scraping Status Message */}
-				{
-					scrapingMessage && (
-						<motion.div
-							initial={{ opacity: 0, y: -10 }}
-							animate={{ opacity: 1, y: 0 }}
-							className="mb-6 p-4 bg-brand-accent/10 border border-brand-accent/30 rounded-xl text-brand-accent text-sm"
-						>
-							{scrapingMessage}
-						</motion.div>
-					)
-				}
+				{scrapingMessage && (
+					<motion.div
+						initial={{ opacity: 0, y: -10 }}
+						animate={{ opacity: 1, y: 0 }}
+						className="mb-6 p-4 bg-brand-accent/10 border border-brand-accent/30 rounded-xl text-brand-accent text-sm"
+					>
+						{scrapingMessage}
+					</motion.div>
+				)}
 
-				{
-					blogs.length === 0 ? (
-						<div className="text-center py-20">
-							<p className="text-brand-secondary text-lg mb-2">No fashion trends available yet.</p>
+				{filteredBlogs.length === 0 ? (
+					<div className="text-center py-20">
+						<p className="text-brand-secondary text-lg mb-2">
+							{blogs.length === 0 ? 'No fashion trends available yet.' : `No ${blogFilter} blogs found.`}
+						</p>
+						{blogs.length === 0 && isAdmin && (
 							<p className="text-brand-secondary/60 text-sm">Click "Start Scraping" to fetch the latest trends!</p>
-						</div>
-					) : (
-						<div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
-							{blogs.map((blog, index) => {
-								const isExpanded = expandedCards.has(blog.id);
+						)}
+					</div>
+				) : (
+					<div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+						{filteredBlogs.map((blog, index) => {
+							const isExpanded = expandedCards.has(blog.id);
 
-								// Grid Mode
-								if (viewMode === 'grid') {
-									return (
-										<motion.div
-											key={blog.id}
-											initial={{ opacity: 0, y: 50 }}
-											whileInView={{ opacity: 1, y: 0 }}
-											transition={{ duration: 0.3 }}
-											viewport={{ once: true }}
-											onClick={() => setSelectedCard(blog)}
-											className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
-										>									{/* Admin Controls */}
-											{isAdmin && (
-												<div className="flex items-center justify-end gap-2 mb-3">
-													{blog.approved === 0 && (
-														<button
-															onClick={(e) => { e.stopPropagation(); handleApproveBlog(blog.id); }}
-															disabled={actionLoading[blog.id]}
-														className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-xs font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
-														>
-															<CheckIcon className="w-4 h-4" />
-															Publish
-														</button>
-													)}
-													{blog.approved === 1 && (
-														<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
-															Published
-														</span>
-													)}
-													<button
-														onClick={(e) => { e.stopPropagation(); handleRemoveBlog(blog.id); }}
-														disabled={actionLoading[blog.id]}
-													className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-xs font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
-													>
-														<TrashIcon className="w-4 h-4" />
-														Remove
-													</button>
-												</div>
-											)}										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
-											<p className="text-brand-secondary text-sm mb-3 line-clamp-2">{blog.description}</p>
-											<span className="inline-block px-3 py-1.5 bg-black text-white font-bold rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md">{blog.platform}</span>
-											{blog.image && (
-												<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-											)}
-
-											{/* User Operations */}
-											<div className="flex items-center gap-4 pt-3 border-t border-brand-secondary/20">
-												<button
-													onClick={(e) => { e.stopPropagation(); toggleLike(blog.id); }}
-													className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
-												>
-													{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5" />}
-													<span className="text-xs font-semibold">Like</span>
-												</button>
-												<button
-													onClick={(e) => { e.stopPropagation(); setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id); }}
-													className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
-												>
-													<ChatBubbleLeftIcon className="w-5 h-5" />
-													<span className="text-xs font-semibold">Comment</span>
-												</button>
-												<div className="flex-1"></div>
-												<a
-													href={blog.link}
-													target="_blank"
-													rel="noopener noreferrer"
-													onClick={(e) => e.stopPropagation()}
-													className="flex items-center gap-1 px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-gradient-to-r hover:from-brand-accent hover:to-purple-600 transition-all duration-300 font-bold text-xs shadow-lg hover:shadow-brand-accent/50 hover:scale-105 cursor-pointer"
-												>
-													<span>Original Article</span>
-													<span>→</span>
-												</a>
-											</div>
-										</motion.div>
-									);
-								}
-
-								// Row Mode
+							// Grid Mode
+							if (viewMode === 'grid') {
 								return (
 									<motion.div
 										key={blog.id}
 										initial={{ opacity: 0, y: 50 }}
 										whileInView={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.6, delay: index * 0.1 }}
+										transition={{ duration: 0.3 }}
 										viewport={{ once: true }}
-										className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 overflow-hidden"
-									>
-										<div className="p-6">
-											<div className="flex items-start justify-between mb-4">
-												<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
-												<div className="flex items-center gap-2 ml-3">
-													<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span>
-													{/* Admin Controls */}
-													{isAdmin && (
-														<>
-															{blog.approved === 0 && (
-																<button
-																	onClick={() => handleApproveBlog(blog.id)}
-																	disabled={actionLoading[blog.id]}
-																className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-xs font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
-																>
-																	<CheckIcon className="w-4 h-4" />
-																	Publish
-																</button>
-															)}
-															{blog.approved === 1 && (
-																<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
-																	Published
-																</span>
-															)}
-															<button
-																onClick={() => handleRemoveBlog(blog.id)}
-																disabled={actionLoading[blog.id]}
-															className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-xs font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
-															>
-																<TrashIcon className="w-4 h-4" />
-																Remove
-															</button>
-														</>
-													)}
-												</div>
-											</div>
-											<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
-											<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
-												<p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p>
-												<p className={`text-sm text-white ${!isExpanded ? 'line-clamp-2' : ''}`}>{blog.ai_insight}</p>
-											</div>
-											<span className="text-xs text-brand-secondary">{formatDate(blog.createdAt)}</span>
-										</div>
-
-										<div className="px-6 pb-4">
-											<button
-												onClick={() => toggleExpand(blog.id)}
-												className="w-full py-3 bg-brand-accent/20 text-brand-accent rounded-xl font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
-											>
-												{isExpanded ? 'Show Less' : 'View Details'}
-												<ChevronDownIcon className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-											</button>
-										</div>
-
-										<AnimatePresence>
-											{isExpanded && (
-												<motion.div
-													initial={{ height: 0, opacity: 0 }}
-													animate={{ height: 'auto', opacity: 1 }}
-													exit={{ height: 0, opacity: 0 }}
-													className="px-6 pb-6 border-t border-brand-secondary/20"
+										onClick={() => setSelectedCard(blog)}
+										className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
+									>									{/* Admin Controls */}
+										{isAdmin && (
+											<div className="flex items-center justify-end gap-2 mb-3">
+												{blog.approved === 0 && (
+													<button
+														onClick={(e) => { e.stopPropagation(); handleApproveBlog(blog.id); }}
+														disabled={actionLoading[blog.id]}
+														className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-xs font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
+													>
+														<CheckIcon className="w-4 h-4" />
+														Publish
+													</button>
+												)}
+												{blog.approved === 1 && (
+													<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
+														Published
+													</span>
+												)}
+												<button
+													onClick={(e) => { e.stopPropagation(); handleRemoveBlog(blog.id); }}
+													disabled={actionLoading[blog.id]}
+													className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-xs font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
 												>
-													{blog.image && (
-														<img src={blog.image} alt={blog.title} className="w-full h-64 object-cover rounded-lg my-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-													)}
-													<a href={blog.link} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 bg-brand-accent text-white rounded-lg mb-4 font-semibold cursor-pointer">
-														View Original Article →
-													</a>
-													<div className="flex items-center justify-center gap-4 pt-4 border-t border-brand-secondary/20">
-														<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
-															{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5 text-brand-secondary" />}
-															<span className="text-sm text-brand-secondary">Like</span>
-														</button>
-														<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
-															<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
-															<span className="text-sm text-brand-secondary">Comment</span>
-														</button>
-													</div>
-													<AnimatePresence>
-														{commentBoxOpen === blog.id && (
-															<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 pt-4 border-t border-brand-secondary/20">
-																<div className="flex gap-2">
-																	<input
-																		type="text"
-																		value={comments[blog.id] || ''}
-																		onChange={(e) => setComments(prev => ({ ...prev, [blog.id]: e.target.value }))}
-																		placeholder="Add a comment..."
-																		className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none"
-																		onKeyPress={(e) => e.key === 'Enter' && handleComment(blog.id)}
-																	/>
-																	<button onClick={() => handleComment(blog.id)} className="px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold text-sm">
-																		Post
-																	</button>
-																</div>
-															</motion.div>
-														)}
-													</AnimatePresence>
-												</motion.div>
-											)}
-										</AnimatePresence>
+													<TrashIcon className="w-4 h-4" />
+													Remove
+												</button>
+											</div>
+										)}										<h2 className="text-xl text-gradient font-bold mb-3">{blog.title}</h2>
+										<p className="text-brand-secondary text-sm mb-3 line-clamp-2">{blog.description}</p>
+										<span className="inline-block px-3 py-1.5 bg-black text-white font-bold rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md">{blog.platform}</span>
+										{blog.image && (
+											<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+										)}
+
+										{/* User Operations */}
+										<div className="flex items-center gap-4 pt-3 border-t border-brand-secondary/20">
+											<button
+												onClick={(e) => { e.stopPropagation(); toggleLike(blog.id); }}
+												className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
+											>
+												{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5" />}
+												<span className="text-xs font-semibold">Like</span>
+											</button>
+											<button
+												onClick={(e) => { e.stopPropagation(); setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id); }}
+												className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
+											>
+												<ChatBubbleLeftIcon className="w-5 h-5" />
+												<span className="text-xs font-semibold">Comment</span>
+											</button>
+											<div className="flex-1"></div>
+											<a
+												href={blog.link}
+												target="_blank"
+												rel="noopener noreferrer"
+												onClick={(e) => e.stopPropagation()}
+												className="flex items-center gap-1 px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-gradient-to-r hover:from-brand-accent hover:to-purple-600 transition-all duration-300 font-bold text-xs shadow-lg hover:shadow-brand-accent/50 hover:scale-105 cursor-pointer"
+											>
+												<span>Original Article</span>
+												<span>→</span>
+											</a>
+										</div>
 									</motion.div>
 								);
-							})}
-						</div>
-					)
+							}
+
+							// Row Mode
+							return (
+								<motion.div
+									key={blog.id}
+									initial={{ opacity: 0, y: 50 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.6, delay: index * 0.1 }}
+									viewport={{ once: true }}
+									className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 overflow-hidden"
+								>
+									<div className="p-6">
+										<div className="flex items-start justify-between mb-4">
+											<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
+											<div className="flex items-center gap-2 ml-3">
+												<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span>
+												{/* Admin Controls */}
+												{isAdmin && (
+													<>
+														{blog.approved === 0 && (
+															<button
+																onClick={() => handleApproveBlog(blog.id)}
+																disabled={actionLoading[blog.id]}
+																className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 text-green-400 rounded-lg text-xs font-semibold hover:from-green-500/40 hover:to-emerald-500/40 hover:text-green-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-green-500/30 border border-green-500/30 hover:border-green-400/50"
+															>
+																<CheckIcon className="w-4 h-4" />
+																Publish
+															</button>
+														)}
+														{blog.approved === 1 && (
+															<span className="px-3 py-1.5 bg-brand-accent/20 text-brand-accent rounded-lg text-xs font-semibold">
+																Published
+															</span>
+														)}
+														<button
+															onClick={() => handleRemoveBlog(blog.id)}
+															disabled={actionLoading[blog.id]}
+															className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-red-500/20 to-rose-500/20 text-red-400 rounded-lg text-xs font-semibold hover:from-red-500/40 hover:to-rose-500/40 hover:text-red-300 hover:scale-105 transition-all duration-300 disabled:opacity-50 cursor-pointer shadow-md hover:shadow-red-500/30 border border-red-500/30 hover:border-red-400/50"
+														>
+															<TrashIcon className="w-4 h-4" />
+															Remove
+														</button>
+													</>
+												)}
+											</div>
+										</div>
+										<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
+										<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
+											<p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p>
+											<p className={`text-sm text-white ${!isExpanded ? 'line-clamp-2' : ''}`}>{blog.ai_insight}</p>
+										</div>
+										<span className="text-xs text-brand-secondary">{formatDate(blog.createdAt)}</span>
+									</div>
+
+									<div className="px-6 pb-4">
+										<button
+											onClick={() => toggleExpand(blog.id)}
+											className="w-full py-3 bg-brand-accent/20 text-brand-accent rounded-xl font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
+										>
+											{isExpanded ? 'Show Less' : 'View Details'}
+											<ChevronDownIcon className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+										</button>
+									</div>
+
+									<AnimatePresence>
+										{isExpanded && (
+											<motion.div
+												initial={{ height: 0, opacity: 0 }}
+												animate={{ height: 'auto', opacity: 1 }}
+												exit={{ height: 0, opacity: 0 }}
+												className="px-6 pb-6 border-t border-brand-secondary/20"
+											>
+												{blog.image && (
+													<img src={blog.image} alt={blog.title} className="w-full h-64 object-cover rounded-lg my-4" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+												)}
+												<a href={blog.link} target="_blank" rel="noopener noreferrer" className="block w-full text-center px-6 py-3 bg-brand-accent text-white rounded-lg mb-4 font-semibold cursor-pointer">
+													View Original Article →
+												</a>
+												<div className="flex items-center justify-center gap-4 pt-4 border-t border-brand-secondary/20">
+													<button onClick={() => toggleLike(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
+														{likedBlogs.has(blog.id) ? <HeartSolidIcon className="w-5 h-5 text-red-500" /> : <HeartIcon className="w-5 h-5 text-brand-secondary" />}
+														<span className="text-sm text-brand-secondary">Like</span>
+													</button>
+													<button onClick={() => setCommentBoxOpen(commentBoxOpen === blog.id ? null : blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
+														<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
+														<span className="text-sm text-brand-secondary">Comment</span>
+													</button>
+												</div>
+												<AnimatePresence>
+													{commentBoxOpen === blog.id && (
+														<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-4 pt-4 border-t border-brand-secondary/20">
+															<div className="flex gap-2">
+																<input
+																	type="text"
+																	value={comments[blog.id] || ''}
+																	onChange={(e) => setComments(prev => ({ ...prev, [blog.id]: e.target.value }))}
+																	placeholder="Add a comment..."
+																	className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none"
+																	onKeyPress={(e) => e.key === 'Enter' && handleComment(blog.id)}
+																/>
+																<button onClick={() => handleComment(blog.id)} className="px-4 py-2 bg-brand-accent text-white rounded-lg font-semibold text-sm">
+																	Post
+																</button>
+															</div>
+														</motion.div>
+													)}
+												</AnimatePresence>
+											</motion.div>
+										)}
+									</AnimatePresence>
+								</motion.div>
+							);
+						})}
+					</div>
+				)
 				}
 			</section >
 		</div >
