@@ -79,7 +79,7 @@ export const AuthModal: React.FC = () => {
 							</h2> */}
 							<div className="flex items-center justify-center mb-4">
 								<img
-									src="/logo.jpg"
+									src="/logo.png"
 									alt="GIA Token"
 									className="h-20 w-20 object-contain opacity-90"
 								/>
