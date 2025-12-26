@@ -360,9 +360,9 @@ export const AIBlogPage: React.FC = () => {
 										<div className="flex items-start justify-between mb-6">
 											<div className="flex-1">
 												<h2 className="text-3xl text-gradient mb-3">{selectedCard.title}</h2>
-												<div className="px-4 py-2 bg-black text-white rounded-lg uppercase text-sm hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg inline-block">
+												{/* <div className="px-4 py-2 bg-black text-white rounded-lg uppercase text-sm hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg inline-block">
 													{selectedCard.platform}
-												</div>
+												</div> */}
 											</div>
 
 											{/* Admin Controls - Top Right */}
@@ -397,7 +397,7 @@ export const AIBlogPage: React.FC = () => {
 
 										{/* AI Insight */}
 										<div className="mb-6">
-											<p className="text-xs text-brand-accent mb-1">AI INSIGHT</p>
+											{/* <p className="text-xs text-brand-accent mb-1">AI INSIGHT</p> */}
 
 											<div className="text-sm text-white leading-relaxed">
 												{(() => {
@@ -685,7 +685,7 @@ export const AIBlogPage: React.FC = () => {
 													</button>
 												</div>
 											)}										<h2 className="text-xl text-gradient mb-3">{blog.title}</h2>
-											<span className="inline-block px-3 py-1.5 bg-black text-white rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md mb-3">{blog.platform}</span>
+											{/* <span className="inline-block px-3 py-1.5 bg-black text-white rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md mb-3">{blog.platform}</span> */}
 											{blog.image && (
 												<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
 											)}
@@ -748,7 +748,7 @@ export const AIBlogPage: React.FC = () => {
 											<div className="flex items-start justify-between mb-4">
 												<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
 												<div className="flex items-center gap-2 ml-3">
-													<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span>
+													{/* <span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span> */}
 													{/* Admin Controls */}
 													{isAdmin && (
 														<>
@@ -781,7 +781,7 @@ export const AIBlogPage: React.FC = () => {
 											</div>
 											<p className="text-brand-secondary text-sm mb-4">{blog.description}</p>
 											<div className="bg-brand-bg/50 rounded-xl p-4 border border-brand-accent/30 mb-4">
-												<p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p>
+												{/* <p className="text-xs text-brand-accent font-semibold mb-1">🤖 AI INSIGHT</p> */}
 												<p className={`text-sm text-white ${!isExpanded ? 'line-clamp-2' : ''}`}>{blog.ai_insight}</p>
 											</div>
 											<span className="text-xs text-brand-secondary">{formatDate(blog.createdAt)}</span>
