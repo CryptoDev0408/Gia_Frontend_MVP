@@ -117,7 +117,7 @@ export const Header: React.FC = () => {
           >
             <Link to='/' className="flex items-center">
               <img
-                src="/logo.png"
+                src="/logo.jpg"
                 alt="GIA Token"
                 className="h-12 w-12 object-contain opacity-90"
               />
