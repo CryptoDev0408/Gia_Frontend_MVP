@@ -153,9 +153,19 @@ export const Header: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600/20 to-pink-600/20 hover:from-purple-600/30 hover:to-pink-600/30 border border-purple-500/30 hover:border-purple-500/50 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-purple-500/20"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
+                  style={{
+                    backgroundColor: 'rgba(31, 97, 83, 0.5)',
+                    color: '#ffffff'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#0b3539';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#1f6153';
+                  }}
                 >
-                  <UserCircleIcon className="h-8 w-8 text-purple-400" />
+                  <UserCircleIcon className="h-8 w-8 text-white" />
                   <span className="text-sm font-semibold text-white">{user.username || user.email}</span>
                 </button>
 
