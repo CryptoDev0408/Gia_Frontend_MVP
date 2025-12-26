@@ -152,7 +152,8 @@ export const AuthModal: React.FC = () => {
 							<Button
 								type="submit"
 								disabled={isLoading}
-								className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+								className="w-full bg-[#1f6153] hover:bg-[#0b3539] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+
 							>
 								{isLoading ? (
 									<span className="flex items-center justify-center">
@@ -176,7 +177,7 @@ export const AuthModal: React.FC = () => {
 									setIsLogin(!isLogin);
 									setError('');
 								}}
-								className="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors"
+								className="text-gray-500 hover:text-white text-sm font-medium transition-colors"
 							>
 								{isLogin ? (
 									<>
