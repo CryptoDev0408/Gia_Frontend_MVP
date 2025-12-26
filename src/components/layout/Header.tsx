@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '../ui/Button';
+// import { Button } from '../ui/Button';
 // import { useWallet } from '../../hooks/useWallet';
 import { useAuth } from '../../contexts/AuthContext';
 import { MobileMenu } from './MobileMenu';
