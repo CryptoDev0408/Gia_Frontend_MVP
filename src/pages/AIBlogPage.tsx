@@ -399,29 +399,31 @@ export const AIBlogPage: React.FC = () => {
 										<div className="mb-6">
 											<p className="text-xs text-brand-accent mb-1">AI INSIGHT</p>
 
-											<div
-												className={`text-sm text-white leading-relaxed ${expandedInsight ? '' : 'line-clamp-2'
-													}`}
-											>
-												{selectedCard.ai_insight
-													?.split(/(?<=\.)\s+/)
-													.map((sentence, index) => (
+											<div className="text-sm text-white leading-relaxed">
+												{(() => {
+													const sentences = selectedCard.ai_insight?.split(/(?<=\.)\s+/) || [];
+													const displaySentences = expandedInsight ? sentences : sentences.slice(0, 2);
+
+													return displaySentences.map((sentence, index) => (
 														<span key={index}>
 															{sentence}
 															<br />
 															<br />
 														</span>
-													))}
+													));
+												})()}
 											</div>
 
-											{selectedCard.ai_insight && selectedCard.ai_insight.length > 150 && (
-												<button
-													onClick={() => setExpandedInsight(!expandedInsight)}
-													className="text-brand-accent text-xs mt-2 hover:underline"
-												>
-													{expandedInsight ? 'Show less' : 'Show more...'}
-												</button>
-											)}
+											{selectedCard.ai_insight &&
+												selectedCard.ai_insight.split(/(?<=\.)\s+/).length > 2 && (
+													<button
+														onClick={() => setExpandedInsight(!expandedInsight)}
+														className="text-brand-accent text-xs mt-2 hover:underline"
+													>
+														{expandedInsight ? 'Show less' : 'Show more...'}
+													</button>
+												)}
+
 
 											{/* Image */}
 											{selectedCard.image && (
