@@ -63,6 +63,8 @@ export const AIBlogPage: React.FC = () => {
 			const includeUnapproved = isAdmin ? 'true' : 'false';
 			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=${includeUnapproved}`);
 
+			console.log("AAAAAAAAAAAAAAAAAAAAAAAAA : ", response.data.data.blogs)
+
 			console.log('[AIBlogPage] Blogs fetched successfully:', response.data.data.blogs.length, 'blogs');
 			setBlogs(response.data.data.blogs);
 		} catch (err: any) {
@@ -394,8 +396,19 @@ export const AIBlogPage: React.FC = () => {
 
 										{/* AI Insight */}
 										<div className="mb-6">
-											<p className="text-xs text-brand-accent mb-1">AI INSIGHT</p>
-											<p className="text-sm text-white leading-relaxed line-clamp-2">{selectedCard.ai_insight}</p>
+											{/* <p className="text-xs text-brand-accent mb-1">Article:</p> */}
+											<p className="text-sm text-white leading-relaxed">
+												{selectedCard.ai_insight
+													?.split(/(?<=\.)\s+/)
+													.map((sentence, index) => (
+														<span key={index}>
+															{sentence}
+															<br />
+															<br />
+														</span>
+													))}
+											</p>
+											{/* <p className="text-sm text-white leading-relaxed ">{selectedCard.ai_insight}</p> */}
 										</div>
 
 										{/* Image */}
@@ -411,9 +424,9 @@ export const AIBlogPage: React.FC = () => {
 										)}
 
 										{/* Description */}
-										<div className="mb-6">
+										{/* <div className="mb-6">
 											<p className="text-brand-secondary text-base leading-relaxed">{selectedCard.description}</p>
-										</div>
+										</div> */}
 
 
 										{/* Bottom Action Buttons - Like, Comment, Original */}
@@ -605,7 +618,10 @@ export const AIBlogPage: React.FC = () => {
 										whileInView={{ opacity: 1, y: 0 }}
 										transition={{ duration: 0.3 }}
 										viewport={{ once: true }}
-										onClick={() => setSelectedCard(blog)}
+										onClick={() => {
+											console.log("BBBBBBBBBBBBBBB : ", blog)
+											setSelectedCard(blog)
+										}}
 										className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
 									>									{/* Admin Controls */}
 										{isAdmin && (
