@@ -67,7 +67,7 @@ export const Footer: React.FC = () => {
         >
           <div className="flex items-center justify-center mb-4">
             <img
-              src="/logo.png"
+              src="/logo.jpg"
               alt="GIA Token"
               className="h-20 w-20 object-contain opacity-90"
             />
