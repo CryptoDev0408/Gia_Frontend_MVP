@@ -133,7 +133,8 @@ export const Whitepaper: React.FC = () => {
               className="w-[100%] h-auto object-contain rounded-xl max-h-[480px] mx-auto"
               style={{ aspectRatio: '1280/864', maxWidth: '100%' }}
             >
-              <source src="/transparent-ROADMAP SITE.mp4" type="video/mp4" />
+              {/* <source src="/transparent-ROADMAP SITE.mp4" type="video/mp4" /> */}
+              <source src="/gia_roadmap_video.mp4" type="video/mp4" />
             </video>
             <motion.div
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
