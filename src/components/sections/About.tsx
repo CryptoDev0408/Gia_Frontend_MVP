@@ -18,7 +18,7 @@ export const About: React.FC = () => {
     // ✅ Fetch fresh data in background
     const fetchAbout = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/about");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/about`);
         setAboutData(res.data);
         localStorage.setItem("aboutData", JSON.stringify(res.data));
       } catch (err) {

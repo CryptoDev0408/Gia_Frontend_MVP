@@ -36,7 +36,7 @@ export const Whitepaper: React.FC = () => {
     // ✅ Always fetch fresh data in background
     const fetchWhitepaper = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/updateWhitepaper");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/updateWhitepaper`);
         setWhitepaper(res.data);
         localStorage.setItem("whitepaperData", JSON.stringify(res.data));
       } catch (err) {

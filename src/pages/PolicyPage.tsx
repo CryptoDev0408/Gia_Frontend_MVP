@@ -17,7 +17,7 @@ useEffect(() => {
     }
 
     try {
-      const res = await axios.get('https://admin.giafashion.io/api/privacy-policy');
+      const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/privacy-policy`);
       const policyData = {
         policy_title: res.data.policy_title,
         policy_description: res.data.policy_description,

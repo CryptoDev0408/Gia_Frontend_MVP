@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
     // Always fetch fresh data (background update)
     const fetchHeader = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/header");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/header`);
         setHeaderData(res.data);
         localStorage.setItem("headerData", JSON.stringify(res.data));
       } catch (err) {

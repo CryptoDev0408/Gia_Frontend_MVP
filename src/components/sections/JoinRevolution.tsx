@@ -16,7 +16,7 @@ export const JoinRevolution: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [revolution, setRevolution] = useState<RevolutionData | null>(null);
-  
+
 
   useEffect(() => {
     // ✅ Check localStorage first
@@ -31,7 +31,7 @@ export const JoinRevolution: React.FC = () => {
     // ✅ Always fetch fresh data
     const fetchRevolution = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/revolution");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/revolution`);
         const data = res.data;
         data.texts = typeof data.texts === "string" ? JSON.parse(data.texts) : data.texts;
 
@@ -50,7 +50,7 @@ export const JoinRevolution: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("https://admin.giafashion.io/api/newsletter", {
+      const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, {
         email: email,
       });
 
@@ -109,38 +109,38 @@ export const JoinRevolution: React.FC = () => {
           </p>
 
           {/* Email Form */}
-           <form onSubmit={handleSubmit} className="mb-8">
-      <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email address"
-          className="flex-1 px-4 py-3 bg-brand-cardbg/70 border border-brand-secondary/20 rounded-lg 
+          <form onSubmit={handleSubmit} className="mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address"
+                className="flex-1 px-4 py-3 bg-brand-cardbg/70 border border-brand-secondary/20 rounded-lg 
                      text-white placeholder-brand-secondary focus:border-brand-accent 
                      focus:outline-none transition-colors duration-200"
-          required
-        />
-        <Button
-          type="submit"
-          size="lg"
-          variant="translucent"
-          disabled={isLoading}
-          className="min-w-[150px] subscribe-me"
-        >
-          {isLoading ? "Joining..." : "Join Waitlist"}
-           <>
-    <style>
-      {`
+                required
+              />
+              <Button
+                type="submit"
+                size="lg"
+                variant="translucent"
+                disabled={isLoading}
+                className="min-w-[150px] subscribe-me"
+              >
+                {isLoading ? "Joining..." : "Join Waitlist"}
+                <>
+                  <style>
+                    {`
         .subscribe-me {
           font-weight: 200;
       }
       `}
-    </style>
-  </>
-        </Button>
-      </div>
-    </form>
+                  </style>
+                </>
+              </Button>
+            </div>
+          </form>
 
           {/* Dynamic Benefits (texts JSON) */}
           <div className="mb-6">

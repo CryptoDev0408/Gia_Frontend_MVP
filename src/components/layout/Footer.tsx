@@ -40,7 +40,7 @@ export const Footer: React.FC = () => {
     // ✅ Always fetch fresh footer data
     const fetchFooter = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/footer");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/footer`);
         setData(res.data);
         localStorage.setItem("footerData", JSON.stringify(res.data));
       } catch (err) {

@@ -51,7 +51,7 @@ export const FAQ: React.FC = () => {
     // ✅ Always fetch fresh FAQs from API
     const fetchFaqs = async () => {
       try {
-        const res = await axios.get("https://admin.giafashion.io/api/faqs");
+        const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/faqs`);
         let data = res.data;
 
         // Convert faqs object → array
