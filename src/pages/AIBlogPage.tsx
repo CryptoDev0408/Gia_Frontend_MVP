@@ -752,6 +752,9 @@ export const AIBlogPage: React.FC = () => {
 						<div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
 							{filteredBlogs.map((blog, index) => {
 								const isExpanded = expandedCards.has(blog.id);
+								const sentences = blog.ai_insight?.split(/(?<=\.)\s+/) || [];
+								const displaySentences = isExpanded ? sentences : sentences.slice(0, 1);
+								const hasMore = sentences.length > 1;
 
 								// Grid Mode
 								if (viewMode === 'grid') {
@@ -762,11 +765,6 @@ export const AIBlogPage: React.FC = () => {
 											whileInView={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.3 }}
 											viewport={{ once: true }}
-											onClick={() => {
-												console.log("BBBBBBBBBBBBBBB : ", blog)
-												setSelectedCard(blog);
-												setExpandedInsight(false);
-											}}
 											className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
 										>									{/* Admin Controls */}
 											{isAdmin && (
@@ -795,10 +793,52 @@ export const AIBlogPage: React.FC = () => {
 														Remove
 													</button>
 												</div>
-											)}										<h2 className="text-xl text-gradient mb-3">{blog.title}</h2>
-											<span className="inline-block px-3 py-1.5 bg-black text-white rounded-lg uppercase text-xs hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-md mb-3">{blog.platform}</span>
+											)}										<h2
+												className="text-xl text-gradient mb-3 cursor-pointer"
+												onClick={() => {
+													console.log("BBBBBBBBBBBBBBB : ", blog)
+													setSelectedCard(blog);
+													setExpandedInsight(false);
+												}}
+											>{blog.title}</h2>
+
+
+											{/* AI Insight */}
+											<div className="mb-3">
+												<div className="text-sm text-white leading-relaxed">
+													{displaySentences.map((sentence, idx) => (
+														<span key={idx}>
+															{sentence}
+															<br />
+															<br />
+														</span>
+													))}
+												</div>
+												{hasMore && (
+													<button
+														onClick={(e) => {
+															e.stopPropagation();
+															toggleExpand(blog.id);
+														}}
+														className="text-brand-accent text-xs mt-1 hover:underline"
+													>
+														{isExpanded ? 'Show less' : 'Show more...'}
+													</button>
+												)}
+											</div>
+
+
 											{blog.image && (
-												<img src={blog.image} alt={blog.title} className="w-full h-48 object-cover rounded-lg mt-3 mb-3" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+												<img
+													src={blog.image}
+													alt={blog.title}
+													className="w-full h-48 object-cover rounded-lg mt-3 mb-3 cursor-pointer"
+													onError={(e) => { e.currentTarget.style.display = 'none'; }}
+													onClick={() => {
+														setSelectedCard(blog);
+														setExpandedInsight(false);
+													}}
+												/>
 											)}
 
 											{/* User Operations */}
@@ -821,25 +861,6 @@ export const AIBlogPage: React.FC = () => {
 													<span className="text-xs font-semibold">Comment</span>
 												</button>
 												<div className="flex-1"></div>
-												{/* <a
-													href={blog.link}
-													target="_blank"
-													rel="noopener noreferrer"
-													onClick={(e) => e.stopPropagation()}
-													className="flex items-center gap-1 px-3 py-2 text-white rounded-lg transition-all duration-300 text-xs shadow-lg hover:scale-105 cursor-pointer"
-													style={{
-														backgroundColor: '#1f6153'
-													}}
-													onMouseEnter={(e) => {
-														e.currentTarget.style.backgroundColor = '#0b3539';
-													}}
-													onMouseLeave={(e) => {
-														e.currentTarget.style.backgroundColor = '#1f6153';
-													}}
-												>
-													<span>Read Article</span>
-													<span>→</span>
-												</a> */}
 											</div>
 										</motion.div>
 									);
