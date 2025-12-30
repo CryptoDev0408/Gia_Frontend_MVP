@@ -275,6 +275,7 @@ export const Whitepaper: React.FC = () => {
 
                   </video>
                 </div>
+
               </motion.div>
             </div>
           </div>

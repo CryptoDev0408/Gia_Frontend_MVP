@@ -21,6 +21,18 @@ interface Blog {
 	isLiked: boolean;
 }
 
+interface Comment {
+	id: number;
+	comment: string;
+	createdAt: string;
+	updatedAt: string;
+	user: {
+		id: number;
+		username: string;
+		email: string;
+	};
+}
+
 export const AIBlogPage: React.FC = () => {
 	const { user } = useAuth();
 	const isAdmin = user?.role === 'ADMIN';
@@ -36,6 +48,8 @@ export const AIBlogPage: React.FC = () => {
 	const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
 	const [commentBoxOpen, setCommentBoxOpen] = useState<number | null>(null);
 	const [comments, setComments] = useState<Record<number, string>>({});
+	const [blogComments, setBlogComments] = useState<Record<number, Comment[]>>({});
+	const [commentLoading, setCommentLoading] = useState<Record<number, boolean>>({});
 	const [viewMode] = useState<'row' | 'grid'>('grid'); // Fixed to grid layout
 	const [selectedCard, setSelectedCard] = useState<Blog | null>(null);
 	const [blogFilter, setBlogFilter] = useState<'all' | 'draft' | 'published'>('all'); // Admin filter
@@ -230,7 +244,7 @@ export const AIBlogPage: React.FC = () => {
 		}
 	};
 
-	const handleComment = (blogId: number) => {
+	const handleComment = async (blogId: number) => {
 		// Check if user is authenticated
 		if (!user) {
 			alert('Please log in to comment on articles');
@@ -238,12 +252,61 @@ export const AIBlogPage: React.FC = () => {
 		}
 
 		const comment = comments[blogId];
-		if (comment?.trim()) {
-			console.log('Comment submitted:', { blogId, comment });
-			// TODO: Backend integration for comments
-			alert('Comment posted! (Mock - will integrate with backend later)');
-			setComments(prev => ({ ...prev, [blogId]: '' }));
-			setCommentBoxOpen(null);
+		if (!comment?.trim()) {
+			return;
+		}
+
+		try {
+			setCommentLoading(prev => ({ ...prev, [blogId]: true }));
+
+			// Submit comment to backend
+			const response = await apiClient.post(API_ENDPOINTS.BLOG_COMMENTS(blogId), {
+				comment: comment.trim()
+			});
+
+			if (response.data.success) {
+				// Clear the input
+				setComments(prev => ({ ...prev, [blogId]: '' }));
+
+				// Refresh comments for this blog
+				await fetchComments(blogId);
+
+				console.log('Comment posted successfully:', response.data.data);
+			}
+		} catch (err: any) {
+			console.error('Failed to post comment:', err);
+			const errorMsg = err.response?.data?.error || 'Failed to post comment';
+			alert(errorMsg);
+		} finally {
+			setCommentLoading(prev => ({ ...prev, [blogId]: false }));
+		}
+	};
+
+	const fetchComments = async (blogId: number) => {
+		try {
+			const response = await apiClient.get(API_ENDPOINTS.BLOG_COMMENTS(blogId));
+			if (response.data.success) {
+				setBlogComments(prev => ({ ...prev, [blogId]: response.data.data.comments }));
+			}
+		} catch (err: any) {
+			console.error('Failed to fetch comments:', err);
+		}
+	};
+
+	const handleDeleteComment = async (blogId: number, commentId: number) => {
+		if (!confirm('Are you sure you want to delete this comment?')) {
+			return;
+		}
+
+		try {
+			const response = await apiClient.delete(API_ENDPOINTS.BLOG_COMMENT_DELETE(blogId, commentId));
+			if (response.data.success) {
+				// Refresh comments
+				await fetchComments(blogId);
+			}
+		} catch (err: any) {
+			console.error('Failed to delete comment:', err);
+			alert(err.response?.data?.error || 'Failed to delete comment');
 		}
 	};
 
@@ -258,7 +321,13 @@ export const AIBlogPage: React.FC = () => {
 			return;
 		}
 
-		setCommentBoxOpen(commentBoxOpen === blogId ? null : blogId);
+		const isOpening = commentBoxOpen !== blogId;
+		setCommentBoxOpen(isOpening ? blogId : null);
+
+		// Fetch comments when opening
+		if (isOpening && !blogComments[blogId]) {
+			fetchComments(blogId);
+		}
 	};
 
 	const formatDate = (dateString: string) => {
@@ -513,23 +582,63 @@ export const AIBlogPage: React.FC = () => {
 													transition={{ duration: 0.2 }}
 													className="mt-4 pt-4 border-t border-brand-secondary/20"
 												>
-													<div className="flex gap-2">
+													{/* Comment Input */}
+													<div className="flex gap-2 mb-4">
 														<input
 															type="text"
 															value={comments[selectedCard.id] || ''}
 															onChange={(e) => setComments(prev => ({ ...prev, [selectedCard.id]: e.target.value }))}
 															placeholder="Add a comment..."
 															className="flex-1 px-3 py-2 bg-brand-bg/70 border border-brand-secondary/20 rounded-lg text-white text-sm placeholder-brand-secondary focus:border-brand-accent focus:outline-none transition-all"
-															onKeyPress={(e) => e.key === 'Enter' && handleComment(selectedCard.id)}
+															onKeyPress={(e) => e.key === 'Enter' && !commentLoading[selectedCard.id] && handleComment(selectedCard.id)}
+															disabled={commentLoading[selectedCard.id]}
 														/>
 														<motion.button
 															onClick={() => handleComment(selectedCard.id)}
-															whileHover={{ scale: 1.05 }}
-															whileTap={{ scale: 0.95 }}
-															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm transition-all"
+															disabled={commentLoading[selectedCard.id]}
+															whileHover={{ scale: commentLoading[selectedCard.id] ? 1 : 1.05 }}
+															whileTap={{ scale: commentLoading[selectedCard.id] ? 1 : 0.95 }}
+															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 														>
-															Post
+															{commentLoading[selectedCard.id] ? 'Posting...' : 'Post'}
 														</motion.button>
+													</div>
+
+													{/* Display Comments */}
+													<div className="space-y-3 max-h-96 overflow-y-auto">
+														{blogComments[selectedCard.id]?.length > 0 ? (
+															blogComments[selectedCard.id].map((comment) => (
+																<div key={comment.id} className="bg-brand-bg/50 rounded-lg p-3 border border-brand-secondary/10">
+																	<div className="flex items-start justify-between mb-2">
+																		<div className="flex-1">
+																			<div className="flex items-center gap-2">
+																				<span className="text-brand-accent text-sm font-medium">
+																					{comment.user.username}
+																				</span>
+																				<span className="text-brand-secondary/60 text-xs">
+																					{formatDate(comment.createdAt)}
+																				</span>
+																			</div>
+																		</div>
+																		{/* Delete button - show for comment owner or admin */}
+																		{(Number(user?.id) === comment.user.id || isAdmin) && (
+																			<button
+																				onClick={() => handleDeleteComment(selectedCard.id, comment.id)}
+																				className="text-red-400/60 hover:text-red-400 transition-colors"
+																				title="Delete comment"
+																			>
+																				<TrashIcon className="w-4 h-4" />
+																			</button>
+																		)}
+																	</div>
+																	<p className="text-white text-sm leading-relaxed">{comment.comment}</p>
+																</div>
+															))
+														) : (
+															<p className="text-brand-secondary/60 text-sm text-center py-4">
+																No comments yet. Be the first to comment!
+															</p>
+														)}
 													</div>
 												</motion.div>
 											)}

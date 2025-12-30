@@ -224,7 +224,14 @@ export const About: React.FC = () => {
                 <Button
                   size="lg"
                   variant="translucent"
-                  onClick={() => window.open(aboutData.learn_more.link, '_blank')}
+                  onClick={() => {
+                    const link = aboutData.learn_more.link;
+                    // If it's a storage path, prepend the Laravel backend URL
+                    const url = link.startsWith('/storage/') || link.startsWith('uploads/')
+                      ? `${import.meta.env.VITE_LARAVEL_BACKEND_URL}/storage/${link.replace(/^\/storage\//, '').replace(/^uploads\//, 'uploads/')}`
+                      : link;
+                    window.open(url, '_blank');
+                  }}
                   className="min-w-[200px] opacity-80 learn-more"
                 >
                   {aboutData.learn_more.text}

@@ -194,7 +194,11 @@ export const Hero: React.FC = () => {
                   variant="translucent"
                   onClick={() => {
                     if (btn?.link) {
-                      window.open(btn.link, '_blank');
+                      // If it's a storage path, prepend the Laravel backend URL
+                      const url = btn.link.startsWith('/storage/')
+                        ? `${import.meta.env.VITE_LARAVEL_BACKEND_URL}${btn.link}`
+                        : btn.link;
+                      window.open(url, '_blank');
                     }
                   }}
                   className={`min-w-[200px] font-thin ${index === 0 ? 'Join-wrapper' : 'down-wrapper'}`}
@@ -333,10 +337,6 @@ export const Hero: React.FC = () => {
                     </a>
                   )}
                 </div>
-
-
-
-
                 <div
                   style={{
                     cursor: "pointer",
@@ -353,7 +353,7 @@ export const Hero: React.FC = () => {
                 >
                   {heroData.socials[1] && (
                     <a
-                      href={heroData.socials[1].link}
+                      href="https://x.com/GIAFashionAI"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
