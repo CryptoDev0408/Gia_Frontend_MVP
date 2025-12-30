@@ -832,14 +832,10 @@ export const AIBlogPage: React.FC = () => {
 												<img
 													src={blog.image}
 													alt={blog.title}
-													className="w-full h-48 object-cover rounded-lg mt-3 mb-3 cursor-pointer"
-													onError={(e) => { e.currentTarget.style.display = 'none'; }}
-													onClick={() => {
-														setSelectedCard(blog);
-														setExpandedInsight(false);
-													}}
+													className="w-full h-48 object-contain bg-black rounded-lg mt-3 mb-3 cursor-pointer"
 												/>
 											)}
+
 
 											{/* User Operations */}
 											<div className="flex items-center gap-4 pt-3 border-t border-brand-secondary/20">
