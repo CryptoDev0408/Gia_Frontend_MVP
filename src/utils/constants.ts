@@ -3,7 +3,8 @@ export const SOCIAL_LINKS = {
   discord: 'https://discord.gg/FrmzKNAc3',
   twitter: 'https://x.com/GIAFashionAI',
   instagram: 'https://www.instagram.com/gia_ai_fashion/',
-  linkedin: 'https://linked.com'
+  linkedin: 'https://linked.com',
+  youtube: 'https://www.youtube.com/watch?v=-tiJDyKWjGI'
 } as const;
 
 export const NETWORKS = {
