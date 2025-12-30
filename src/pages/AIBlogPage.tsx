@@ -765,6 +765,10 @@ export const AIBlogPage: React.FC = () => {
 											whileInView={{ opacity: 1, y: 0 }}
 											transition={{ duration: 0.3 }}
 											viewport={{ once: true }}
+											onClick={() => {
+												setSelectedCard(blog);
+												setExpandedInsight(false);
+											}}
 											className="bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10 rounded-2xl border border-brand-secondary/20 p-5 cursor-pointer hover:border-brand-accent/40"
 										>									{/* Admin Controls */}
 											{isAdmin && (
@@ -793,14 +797,7 @@ export const AIBlogPage: React.FC = () => {
 														Remove
 													</button>
 												</div>
-											)}										<h2
-												className="text-xl text-gradient mb-3 cursor-pointer"
-												onClick={() => {
-													console.log("BBBBBBBBBBBBBBB : ", blog)
-													setSelectedCard(blog);
-													setExpandedInsight(false);
-												}}
-											>{blog.title}</h2>
+											)}										<h2 className="text-xl text-gradient mb-3">{blog.title}</h2>
 
 
 											{/* AI Insight */}
@@ -832,7 +829,7 @@ export const AIBlogPage: React.FC = () => {
 												<img
 													src={blog.image}
 													alt={blog.title}
-													className="w-full h-48 object-contain bg-black rounded-lg mt-3 mb-3 cursor-pointer"
+													className="w-full h-48 object-contain bg-black rounded-lg mt-3 mb-3"
 												/>
 											)}
 
