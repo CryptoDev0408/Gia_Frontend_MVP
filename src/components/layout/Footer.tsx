@@ -90,23 +90,48 @@ export const Footer: React.FC = () => {
             >
               <h5 className="text-lg font-small text-white mb-4">{list.title}</h5>
               <ul className="space-y-2">
-                {list.items?.map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href={item.link}
-                      className="text-brand-secondary hover:text-brand-accent transition-colors"
-                    >
-                      {item.name}
-                    </a>
-                  </li>
-                ))}
+                {list.items?.map((item, i) => {
+                  // Check if item name is "Contact us", if true, return custom content
+                  if (item.name === "Contact us") {
+                    return (
+                      <li key={i}>
+                        {item.name}
+                        <br />
+                        <span className="text-green-500">{'contact@giafashion.io'}</span> {/* Green color */}
+                      </li>
+                    );
+                  }
+
+                  // Render the list item for all other names
+                  return (
+                    <li key={i}>
+                      <a
+                        href={item.link}
+                        className="text-brand-secondary hover:text-brand-accent transition-colors"
+                      >
+                        {item.name}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
+
+
+              {list.title.toLowerCase() === "contact us" && (
+                <p className="text-brand-secondary mt-4">
+                  <a href="mailto:contact@giafashion.io" className="hover:text-brand-accent transition-colors">
+                    contact@giafashion.io
+                  </a>
+                </p>
+              )}
             </motion.div>
           ))}
         </div>
 
         {/* Social Icons */}
         <SocialLinks className="mt-12" />
+
+
 
         {/* Copyright */}
         <motion.div
