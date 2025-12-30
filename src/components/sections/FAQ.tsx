@@ -197,8 +197,8 @@ export const FAQ: React.FC = () => {
               transition={{ delay: 0.5, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <p className="text-brand-secondary mb-6">{faqData.sub_description}</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              {/* <p className="text-brand-secondary mb-6">{faqData.sub_description}</p> */}
+              {/* <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 {faqData.social_buttons.map((btn, i) => (
                   <a
                     key={i}
@@ -211,7 +211,7 @@ export const FAQ: React.FC = () => {
                     {btn.name} →
                   </a>
                 ))}
-              </div>
+              </div> */}
             </motion.div>
           </div>
         </div>

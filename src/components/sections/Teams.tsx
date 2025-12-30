@@ -38,6 +38,7 @@ export const Teams: React.FC = () => {
     const fetchTeams = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/team`);
+        console.log("=========================================== ", res)
         setTeams(res.data || []);
         localStorage.setItem("teamsData", JSON.stringify(res.data || []));
       } catch (err) {

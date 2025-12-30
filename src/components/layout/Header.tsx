@@ -88,14 +88,19 @@ export const Header: React.FC = () => {
 
   if (!headerData) return <p className="text-white text-center py-4">Loading header...</p>;
 
-  // Parse JSON strings safely
+  // Parse JSON strings safely or use directly if already parsed
   let menuItems: MenuItem[] = [];
   let buttonData: ButtonData | null = null;
   try {
-    menuItems = JSON.parse(headerData.menu_items);
+    menuItems = typeof headerData.menu_items === 'string'
+      ? JSON.parse(headerData.menu_items)
+      : headerData.menu_items;
   } catch { }
+
   try {
-    buttonData = JSON.parse(headerData.button);
+    buttonData = typeof headerData.button === 'string'
+      ? JSON.parse(headerData.button)
+      : headerData.button;
   } catch { }
 
   return (
