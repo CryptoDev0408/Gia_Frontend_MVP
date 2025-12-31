@@ -860,11 +860,13 @@ export const AIBlogPage: React.FC = () => {
 													</span>
 												</button>
 												<button
-													onClick={(e) => handleCommentButtonClick(blog.id, e)}
+													onClick={(e) => { e.stopPropagation(); setSelectedCard(blog); setExpandedInsight(false); }}
 													className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-brand-secondary hover:text-white hover:bg-brand-accent/20 transition-all duration-300 hover:scale-105 cursor-pointer"
 												>
 													<ChatBubbleLeftIcon className="w-5 h-5" />
-													<span className="text-xs font-semibold">Comment</span>
+													<span className="text-xs font-semibold">
+														{blogComments[blog.id]?.length || 0} {blogComments[blog.id]?.length === 1 ? 'Comment' : 'Comments'}
+													</span>
 												</button>
 												<div className="flex-1"></div>
 											</div>
@@ -962,7 +964,9 @@ export const AIBlogPage: React.FC = () => {
 														</button>
 														<button onClick={() => handleCommentButtonClick(blog.id)} className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-brand-accent/10 transition-colors cursor-pointer">
 															<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary" />
-															<span className="text-sm text-brand-secondary">Comment</span>
+															<span className="text-sm text-brand-secondary">
+																{blogComments[blog.id]?.length || 0} {blogComments[blog.id]?.length === 1 ? 'Comment' : 'Comments'}
+															</span>
 														</button>
 													</div>
 													<AnimatePresence>
