@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -264,19 +264,25 @@ export const AIBlogPage: React.FC = () => {
 				comment: comment.trim()
 			});
 
-			if (response.data.success) {
-				// Clear the input
-				setComments(prev => ({ ...prev, [blogId]: '' }));
+			// Clear the input
+			setComments(prev => ({ ...prev, [blogId]: '' }));
 
-				// Refresh comments for this blog
-				await fetchComments(blogId);
+			// Refresh comments for this blog
+			await fetchComments(blogId);
 
-				console.log('Comment posted successfully:', response.data.data);
-			}
+			// Success - no need to log (BigInt serialization issue)
 		} catch (err: any) {
 			console.error('Failed to post comment:', err);
-			const errorMsg = err.response?.data?.error || 'Failed to post comment';
-			alert(errorMsg);
+			const errorMsg = err.response?.data?.error || err.response?.data?.message || 'Failed to post comment';
+
+			// Only show alert if it's a real error (not success stored in DB)
+			if (err.response?.status && err.response.status >= 400) {
+				alert("asdfasfds" + errorMsg);
+			} else {
+				// If status is 200-299, treat as success even if caught as error
+				setComments(prev => ({ ...prev, [blogId]: '' }));
+				await fetchComments(blogId);
+			}
 		} finally {
 			setCommentLoading(prev => ({ ...prev, [blogId]: false }));
 		}
@@ -285,11 +291,15 @@ export const AIBlogPage: React.FC = () => {
 	const fetchComments = async (blogId: number) => {
 		try {
 			const response = await apiClient.get(API_ENDPOINTS.BLOG_COMMENTS(blogId));
-			if (response.data.success) {
-				setBlogComments(prev => ({ ...prev, [blogId]: response.data.data.comments }));
-			}
+			// Handle both response formats
+			const commentsData = response.data.success
+				? response.data.data.comments
+				: (response.data.comments || response.data.data || response.data);
+			setBlogComments(prev => ({ ...prev, [blogId]: commentsData }));
 		} catch (err: any) {
 			console.error('Failed to fetch comments:', err);
+			// Set empty array on error to prevent issues
+			setBlogComments(prev => ({ ...prev, [blogId]: [] }));
 		}
 	};
 
@@ -543,7 +553,9 @@ export const AIBlogPage: React.FC = () => {
 													className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-transparent to-transparent hover:from-brand-accent/20 hover:to-blue-500/20 border border-brand-secondary/30 hover:border-brand-accent/50 transition-all duration-300 group shadow-md hover:shadow-brand-accent/30 cursor-pointer"
 												>
 													<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
-													<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">Comment</span>
+															<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">
+																{blogComments[selectedCard.id]?.length || 0} {blogComments[selectedCard.id]?.length === 1 ? 'Comment' : 'Comments'}
+															</span>
 												</motion.button>
 											</div>
 
@@ -598,8 +610,9 @@ export const AIBlogPage: React.FC = () => {
 															disabled={commentLoading[selectedCard.id]}
 															whileHover={{ scale: commentLoading[selectedCard.id] ? 1 : 1.05 }}
 															whileTap={{ scale: commentLoading[selectedCard.id] ? 1 : 0.95 }}
-															className="px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+																className="flex items-center gap-2 px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm border-2 border-white/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 														>
+															<PaperAirplaneIcon className="w-4 h-4" />
 															{commentLoading[selectedCard.id] ? 'Posting...' : 'Post'}
 														</motion.button>
 													</div>
