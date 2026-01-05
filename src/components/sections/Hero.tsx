@@ -3,7 +3,8 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { useTypingAnimation } from '../../hooks/useTypingAnimation';
-import { FaTwitter, FaDiscord, FaTelegram, FaInstagram, FaYoutube } from 'react-icons/fa';
+import { FaDiscord, FaTelegram, FaYoutube } from 'react-icons/fa';
+import { FaXTwitter } from "react-icons/fa6";
 
 interface ButtonType {
   label: string;
@@ -244,9 +245,9 @@ export const Hero: React.FC = () => {
                     const lowerName = name.toLowerCase();
                     if (lowerName.includes('telegram')) return <FaTelegram size={30} />;
                     if (lowerName.includes('discord')) return <FaDiscord size={30} />;
-                    if (lowerName.includes('x') || lowerName.includes('twitter')) return <FaTwitter size={30} />;
+                    if (lowerName.includes('x') || lowerName.includes('twitter')) return <FaXTwitter size={30} />;
                     if (lowerName.includes('youtube')) return <FaYoutube size={30} />;
-                    return <FaTwitter size={30} />;
+                    return <FaXTwitter size={30} />;
                   };
 
                   return (
