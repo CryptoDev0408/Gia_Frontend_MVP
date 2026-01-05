@@ -260,7 +260,8 @@ export const AIBlogPage: React.FC = () => {
 			setCommentLoading(prev => ({ ...prev, [blogId]: true }));
 
 			// Submit comment to backend
-			const response = await apiClient.post(API_ENDPOINTS.BLOG_COMMENTS(blogId), {
+			// const response = 
+			await apiClient.post(API_ENDPOINTS.BLOG_COMMENTS(blogId), {
 				comment: comment.trim()
 			});
 
@@ -553,9 +554,9 @@ export const AIBlogPage: React.FC = () => {
 													className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-transparent to-transparent hover:from-brand-accent/20 hover:to-blue-500/20 border border-brand-secondary/30 hover:border-brand-accent/50 transition-all duration-300 group shadow-md hover:shadow-brand-accent/30 cursor-pointer"
 												>
 													<ChatBubbleLeftIcon className="w-5 h-5 text-brand-secondary group-hover:text-brand-accent transition-colors" />
-															<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">
-																{blogComments[selectedCard.id]?.length || 0} {blogComments[selectedCard.id]?.length === 1 ? 'Comment' : 'Comments'}
-															</span>
+													<span className="text-sm text-brand-secondary group-hover:text-white transition-colors">
+														{blogComments[selectedCard.id]?.length || 0} {blogComments[selectedCard.id]?.length === 1 ? 'Comment' : 'Comments'}
+													</span>
 												</motion.button>
 											</div>
 
@@ -610,7 +611,7 @@ export const AIBlogPage: React.FC = () => {
 															disabled={commentLoading[selectedCard.id]}
 															whileHover={{ scale: commentLoading[selectedCard.id] ? 1 : 1.05 }}
 															whileTap={{ scale: commentLoading[selectedCard.id] ? 1 : 0.95 }}
-																className="flex items-center gap-2 px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm border-2 border-white/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+															className="flex items-center gap-2 px-4 py-2 bg-brand-accent hover:bg-brand-accent/80 text-white rounded-lg text-sm border-2 border-white/20 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
 														>
 															<PaperAirplaneIcon className="w-4 h-4" />
 															{commentLoading[selectedCard.id] ? 'Posting...' : 'Post'}
