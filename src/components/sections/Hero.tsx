@@ -33,8 +33,15 @@ export const Hero: React.FC = () => {
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    first_name: '',
+    last_name: '',
+    phone: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<any>({});
+  const [allowContact, setAllowContact] = useState(false);
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/hero`)
@@ -49,27 +56,32 @@ export const Hero: React.FC = () => {
 
   const { displayText } = useTypingAnimation(heroData?.subtitle || '', 30);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev: any) => ({ ...prev, [name]: '' }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, {
-        email: email,
-      });
+      const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, formData);
 
-      alert(response.data.message);
-      setEmail("");
+      if (response.data.success) {
+        alert(response.data.message);
+        setFormData({ email: '', first_name: '', last_name: '', phone: '' });
+        setIsOpen(false);
+      }
     } catch (error: any) {
-      if (error.response) {
-        alert(error.response.data.message || "Something went wrong");
-      } else if (error.request) {
-        console.error("No response from server:", error.request);
-        alert("No response from server");
+      if (error.response?.data?.errors) {
+        setErrors(error.response.data.errors);
       } else {
-        console.error("Axios error:", error.message);
-        alert("Request error: " + error.message);
+        alert(error.response?.data?.message || "Something went wrong");
       }
     } finally {
       setIsLoading(false);
@@ -136,40 +148,122 @@ export const Hero: React.FC = () => {
 
               {/* Popup */}
               {isOpen && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-                  <div className="bg-[#1a1a1a] p-6 rounded-2xl shadow-lg w-full max-w-lg relative">
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[9999] p-4">
+                  <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] p-6 rounded-2xl shadow-2xl w-full max-w-sm relative border border-brand-accent/20">
 
                     {/* Close Button */}
                     <button
                       onClick={() => setIsOpen(false)}
-                      className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl"
+                      className="hover:cursor-pointer absolute top-3 right-3 text-gray-400 hover:text-white text-xl transition-colors"
                     >
                       ✕
                     </button>
 
+                    {/* Header */}
+                    <div className="text-center mb-4">
+                      <h2 className="text-2xl text-white mb-4">Join Our Waitlist</h2>
+                      {/* <p className="text-brand-secondary text-xs">Be the first to know when we launch</p> */}
+                    </div>
+
                     {/* Newsletter Form */}
-                    <form onSubmit={handleSubmit} className="my-8">
-                      <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        {/* First Name */}
+                        <div>
+                          <label className="block text-white text-xs font-medium mb-1">First Name</label>
+                          <input
+                            type="text"
+                            name="first_name"
+                            value={formData.first_name}
+                            onChange={handleInputChange}
+                            placeholder="John"
+                            className="w-full px-3 py-2 bg-white/5 border border-brand-secondary/30 rounded-lg text-sm
+                             text-white placeholder-brand-secondary/50 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent/20
+                             focus:outline-none transition-all duration-200"
+                            required
+                          />
+                          {errors.first_name && <p className="text-red-400 text-xs mt-1">{errors.first_name[0]}</p>}
+                        </div>
+
+                        {/* Last Name */}
+                        <div>
+                          <label className="block text-white text-xs font-medium mb-1">Last Name</label>
+                          <input
+                            type="text"
+                            name="last_name"
+                            value={formData.last_name}
+                            onChange={handleInputChange}
+                            placeholder="Doe"
+                            className="w-full px-3 py-2 bg-white/5 border border-brand-secondary/30 rounded-lg text-sm
+                             text-white placeholder-brand-secondary/50 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent/20
+                             focus:outline-none transition-all duration-200"
+                            required
+                          />
+                          {errors.last_name && <p className="text-red-400 text-xs mt-1">{errors.last_name[0]}</p>}
+                        </div>
+                      </div>
+
+                      {/* Email */}
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">Email Address</label>
                         <input
                           type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="Enter your email address"
-                          className="flex-1 px-4 py-3 bg-brand-cardbg/70 border border-brand-secondary/20 rounded-lg 
-                             text-white placeholder-brand-secondary focus:border-brand-accent 
-                             focus:outline-none transition-colors duration-200"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="john.doe@example.com"
+                          className="w-full px-3 py-2 bg-white/5 border border-brand-secondary/30 rounded-lg text-sm
+                           text-white placeholder-brand-secondary/50 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent/20
+                           focus:outline-none transition-all duration-200"
                           required
                         />
-                        <Button
-                          type="submit"
-                          size="lg"
-                          variant="translucent"
-                          disabled={isLoading}
-                          className="min-w-[150px] subscribe-me"
-                        >
-                          {isLoading ? "Joining..." : "Join Waitlist"}
-                        </Button>
+                        {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email[0]}</p>}
                       </div>
+
+                      {/* Phone */}
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">Phone Number</label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          placeholder="+1 (555) 000-0000"
+                          className="w-full px-3 py-2 bg-white/5 border border-brand-secondary/30 rounded-lg text-sm
+                           text-white placeholder-brand-secondary/50 focus:border-brand-accent focus:ring-1 focus:ring-brand-accent/20
+                           focus:outline-none transition-all duration-200"
+                          required
+                        />
+                        {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone[0]}</p>}
+                      </div>
+
+                      {/* Allow Contact Checkbox */}
+                      <div className="flex items-center mt-8">
+                        <input
+                          type="checkbox"
+                          id="allowContact"
+                          checked={allowContact}
+                          onChange={(e) => setAllowContact(e.target.checked)}
+                          className="w-4 h-4 text-brand-accent bg-white/5 border-brand-secondary/30 rounded focus:ring-brand-accent focus:ring-2"
+                        />
+                        <label htmlFor="allowContact" className="ml-2 text-white text-sm">
+                          Consent to admin contact
+                        </label>
+                      </div>
+
+                      {/* Submit Button */}
+                      <Button
+                        type="submit"
+                        disabled={isLoading || !allowContact}
+                        className="w-full mt-4 bg-[#1f6153] hover:bg-[#0b3539] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isLoading ? "Joining..." : "Join Waitlist"}
+                      </Button>
+
+                      {/* Privacy Notice */}
+                      {/* <p className="text-center text-brand-secondary text-xs mt-3">
+                        We respect your privacy. Your information will never be shared.
+                      </p> */}
                     </form>
                   </div>
                 </div>
