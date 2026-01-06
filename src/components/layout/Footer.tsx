@@ -129,7 +129,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Social Icons */}
-        <SocialLinks className="mt-12" />
+        <SocialLinks className="mt-12" socialIcons={data.social_icons} />
 
 
 

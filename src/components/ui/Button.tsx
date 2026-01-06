@@ -21,12 +21,12 @@ export const Button: React.FC<ButtonProps> = ({
   type = 'button'
 }) => {
   const baseClasses = 'font-semibold rounded-lg transition-all duration-200 ease-in-out cursor-pointer';
-  
+
   const variants = {
     primary: 'bg-brand-accent text-brand-dark hover:bg-brand-accent/90',
     secondary: 'bg-brand-secondary text-white hover:bg-brand-secondary/90',
     outline: 'border-2 border-brand-button text-brand-button hover:bg-brand-button hover:text-brand-dark',
-    translucent: 'bg-brand-button text-brand-dark hover:bg-white/90'
+    translucent: 'bg-brand-button text-brand-dark hover:bg-white/70'
   };
 
   const sizes = {
