@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import { trackEmailSignup, trackFormSubmit } from '../../utils/analytics';
 
 type RevolutionData = {
   id: number;
@@ -70,11 +71,18 @@ export const JoinRevolution: React.FC = () => {
       const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, formData);
 
       if (response.data.success) {
+        // Track successful email signup
+        trackEmailSignup('join_waitlist', true);
+        trackFormSubmit('join_waitlist', true);
+
         alert(response.data.message);
         setFormData({ email: '', first_name: '', last_name: '', phone: '' });
         setIsOpen(false);
       }
     } catch (error: any) {
+      // Track failed signup
+      trackFormSubmit('join_waitlist', false);
+
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {

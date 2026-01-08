@@ -1,4 +1,5 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { AuthModal } from './components/AuthModal';
 import { Header } from './components/layout/Header';
@@ -13,6 +14,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import PolicyPage from './pages/PolicyPage';
 import AIBlogPage from './pages/AIBlogPage';
 import { UsersPage } from './pages/UsersPage';
+import { trackPageView } from './utils/analytics';
 import './index.css';
 
 // Add window.ethereum type declarations
@@ -26,10 +28,23 @@ declare global {
   }
 }
 
+// Component to track page views
+function PageViewTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Track page view on route change
+    trackPageView(location.pathname);
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <PageViewTracker />
         <div className="min-h-screen bg-brand-bg overflow-x-hidden">
           <Header />
           <main>

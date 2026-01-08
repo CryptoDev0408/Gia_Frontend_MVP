@@ -82,6 +82,27 @@
     <meta name="author" content="GIA Token Team" />
     <meta name="robots" content="index, follow" />
 
+    <!-- Google Analytics 4 (GA4) -->
+    <!-- IMPORTANT: Replace G-XXXXXXXXXX with your actual GA4 Measurement ID -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      // Initialize GA4 - Replace G-XXXXXXXXXX with your Measurement ID
+      gtag("config", "G-XXXXXXXXXX", {
+        send_page_view: false, // We'll handle page views manually in React Router
+        cookie_flags: "SameSite=None;Secure",
+        anonymize_ip: true,
+      });
+    </script>
+
     <title>GIA Token</title>
   </head>
   <body class="bg-[#132531] text-white">

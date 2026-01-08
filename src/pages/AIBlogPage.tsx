@@ -4,6 +4,7 @@ import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPat
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
+import { trackBlogView, trackBlogLike } from '../utils/analytics';
 
 // Blog interface matching database structure
 interface Blog {
@@ -216,6 +217,9 @@ export const AIBlogPage: React.FC = () => {
 				// Like the blog
 				const response = await apiClient.post(API_ENDPOINTS.BLOG_LIKE(blogId));
 				if (response.data.success) {
+					// Track the like event
+					trackBlogLike(blogId, currentBlog.title);
+
 					// Update local state
 					setBlogs(prev => prev.map(blog =>
 						blog.id === blogId
@@ -780,6 +784,7 @@ export const AIBlogPage: React.FC = () => {
 											transition={{ duration: 0.3 }}
 											viewport={{ once: true }}
 											onClick={() => {
+												trackBlogView(blog.id, blog.title);
 												setSelectedCard(blog);
 												setExpandedInsight(false);
 											}}

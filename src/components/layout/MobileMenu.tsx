@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { trackEvent } from '../../utils/analytics';
 // import { Button } from '../ui/Button';
 
 interface MenuItem {
@@ -41,9 +42,32 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   //   return `${address.slice(0, 6)}...${address.slice(-4)}`;
   // };
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string, itemText?: string) => {
     e.preventDefault();
     onClose();
+
+    // Track navigation event
+    if (itemText) {
+      const eventMap: { [key: string]: any } = {
+        'Home': 'event_nav_btn_home',
+        'About': 'event_nav_btn_about',
+        'Pitch Deck': 'event_nav_btn_pitchdeck',
+        'FAQ': 'event_nav_btn_faq',
+        'Join': 'event_nav_btn_join',
+        'Team': 'event_nav_btn_team'
+      };
+
+      const eventName = eventMap[itemText];
+      if (eventName) {
+        trackEvent(eventName, {
+          event_category: 'navigation',
+          event_label: itemText.toLowerCase().replace(' ', '_'),
+          link: link,
+          device: 'mobile'
+        });
+      }
+    }
+
     if (link.startsWith('#')) {
       if (location.pathname !== '/') {
         navigate('/');
@@ -83,7 +107,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             key={item.text}
             href={item.link}
             className="block text-white hover:text-brand-accent transition-colors text-center cursor-pointer"
-            onClick={(e) => handleNavClick(e, item.link)}
+            onClick={(e) => handleNavClick(e, item.link, item.text)}
           >
             {item.text}
           </a>
@@ -94,6 +118,11 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           to="/ai-blog"
           className="block text-white hover:text-brand-accent transition-colors text-center"
           onClick={() => {
+            trackEvent('event_nav_btn_aiblog', {
+              event_category: 'navigation',
+              event_label: 'ai_blog',
+              device: 'mobile'
+            });
             window.scrollTo({ top: 0, behavior: 'smooth' });
             onClose();
           }}

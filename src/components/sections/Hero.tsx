@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { useTypingAnimation } from '../../hooks/useTypingAnimation';
 import { FaDiscord, FaTelegram, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from "react-icons/fa6";
+import { trackEvent } from '../../utils/analytics';
 
 interface ButtonType {
   label: string;
@@ -141,7 +142,14 @@ export const Hero: React.FC = () => {
                 size="lg"
                 variant="translucent"
                 className="min-w-[200px]  font-thin wawitlist"
-                onClick={() => setIsOpen(true)}
+                onClick={() => {
+                  trackEvent('event_join_waitlist', {
+                    event_category: 'engagement',
+                    event_label: 'join_waitlist_hero',
+                    section: 'hero'
+                  });
+                  setIsOpen(true);
+                }}
               >
                 Join Our Waitlist
               </Button>
@@ -289,6 +297,24 @@ export const Hero: React.FC = () => {
                   size="lg"
                   variant="translucent"
                   onClick={() => {
+                    // Track document download events based on button label
+                    const label = btn.label?.toLowerCase() || '';
+                    if (label.includes('whitepaper')) {
+                      trackEvent('event_document_whitepaper', {
+                        event_category: 'document_download',
+                        event_label: 'whitepaper_button',
+                        document_url: btn.link,
+                        section: 'hero'
+                      });
+                    } else if (label.includes('teaser') || label.includes('one page')) {
+                      trackEvent('event_document_onepageteaser', {
+                        event_category: 'document_download',
+                        event_label: 'onepage_teaser_button',
+                        document_url: btn.link,
+                        section: 'hero'
+                      });
+                    }
+
                     if (btn?.link) {
                       // If it's a storage path, prepend the Laravel backend URL
                       const url = btn.link.startsWith('/storage/')
@@ -344,6 +370,32 @@ export const Hero: React.FC = () => {
                     return <FaXTwitter size={30} />;
                   };
 
+                  const handleSocialClick = (socialName: string, link: string) => {
+                    const lowerName = socialName.toLowerCase();
+                    let eventName: any = 'event_social_x';
+
+                    if (lowerName.includes('telegram')) {
+                      eventName = 'event_social_telegram';
+                    } else if (lowerName.includes('discord')) {
+                      eventName = 'event_social_discord';
+                    } else if (lowerName.includes('x') || lowerName.includes('twitter')) {
+                      eventName = 'event_social_x';
+                    } else if (lowerName.includes('instagram')) {
+                      eventName = 'event_social_instagram';
+                    } else if (lowerName.includes('youtube')) {
+                      eventName = 'event_social_youtube';
+                    } else if (lowerName.includes('linkedin')) {
+                      eventName = 'event_social_linkedin';
+                    }
+
+                    trackEvent(eventName, {
+                      event_category: 'social_engagement',
+                      event_label: socialName.toLowerCase(),
+                      social_url: link,
+                      section: 'hero'
+                    });
+                  };
+
                   return (
                     <div
                       key={index}
@@ -365,6 +417,7 @@ export const Hero: React.FC = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-white hover:text-brand-accent transition-colors"
+                        onClick={() => handleSocialClick(social.name, social.link)}
                       >
                         {getIcon(social.name)}
                       </a>

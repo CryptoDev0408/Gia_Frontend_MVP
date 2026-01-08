@@ -7,6 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { MobileMenu } from './MobileMenu';
 import axios from 'axios';
+import { trackEvent } from '../../utils/analytics';
 
 interface MenuItem {
   text: string;
@@ -59,8 +60,30 @@ export const Header: React.FC = () => {
   //   else await connect();
   // };
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string, itemText?: string) => {
     e.preventDefault();
+
+    // Track navigation event
+    if (itemText) {
+      const eventMap: { [key: string]: any } = {
+        'Home': 'event_nav_btn_home',
+        'About': 'event_nav_btn_about',
+        'Pitch Deck': 'event_nav_btn_pitchdeck',
+        'FAQ': 'event_nav_btn_faq',
+        'Join': 'event_nav_btn_join',
+        'Team': 'event_nav_btn_team'
+      };
+
+      const eventName = eventMap[itemText];
+      if (eventName) {
+        trackEvent(eventName, {
+          event_category: 'navigation',
+          event_label: itemText.toLowerCase().replace(' ', '_'),
+          link: link
+        });
+      }
+    }
+
     if (link.startsWith('#')) {
       // If we're not on homepage, navigate to homepage first then scroll
       if (location.pathname !== '/') {
@@ -135,7 +158,7 @@ export const Header: React.FC = () => {
               <a
                 key={item.text}
                 href={item.link}
-                onClick={(e) => handleNavClick(e, item.link)}
+                onClick={(e) => handleNavClick(e, item.link, item.text)}
                 className="text-white hover:text-brand-accent transition-colors cursor-pointer"
               >
                 {item.text}
@@ -144,7 +167,13 @@ export const Header: React.FC = () => {
             {/* AI Blog Link */}
             <Link
               to="/ai-blog"
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={() => {
+                trackEvent('event_nav_btn_aiblog', {
+                  event_category: 'navigation',
+                  event_label: 'ai_blog'
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               className="text-white hover:text-brand-accent transition-colors cursor-pointer"
             >
               AI Blog
@@ -192,6 +221,11 @@ export const Header: React.FC = () => {
                     </div>
                     <button
                       onClick={() => {
+                        trackEvent('event_sign_out', {
+                          event_category: 'authentication',
+                          event_label: 'sign_out_button',
+                          user_email: user.email
+                        });
                         logout();
                         setShowUserMenu(false);
                         navigate('/');
@@ -208,7 +242,13 @@ export const Header: React.FC = () => {
               </div>
             ) : (
               <button
-                onClick={() => openAuthModal('login')}
+                onClick={() => {
+                  trackEvent('event_sign_in', {
+                    event_category: 'navigation',
+                    event_label: 'sign_in_button'
+                  });
+                  openAuthModal('login');
+                }}
                 className="text-white hover:text-brand-accent transition-colors cursor-pointer bg-transparent border-none p-0 font-normal text-base"
               >
                 Sign In

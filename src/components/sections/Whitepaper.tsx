@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import axios from 'axios';
+import { trackWhitepaperDownload } from '../../utils/analytics';
 
 // Icons
 import {
@@ -97,6 +98,7 @@ export const Whitepaper: React.FC = () => {
             variant="translucent"
             onClick={() => {
               if (whitepaper?.button_link) {
+                trackWhitepaperDownload(whitepaper?.button_text || 'Whitepaper');
                 window.open(whitepaper.button_link, "_blank");
               }
             }}

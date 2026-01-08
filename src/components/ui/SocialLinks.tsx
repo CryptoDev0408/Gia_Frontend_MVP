@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SocialIcon } from 'react-social-icons';
 import { SOCIAL_LINKS } from '../../utils/constants';
+import { trackSocialClick } from '../../utils/analytics';
 
 interface SocialIconData {
   icon: string;
@@ -50,6 +51,7 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = '', social
           href={social.url}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackSocialClick(social.network, social.url)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
