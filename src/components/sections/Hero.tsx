@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
@@ -28,6 +28,7 @@ interface HeroData {
 }
 
 export const Hero: React.FC = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [heroData, setHeroData] = useState<HeroData | null>(() => {
     const cached = localStorage.getItem("heroData");
     return cached ? JSON.parse(cached) : null;
@@ -53,6 +54,28 @@ export const Hero: React.FC = () => {
       .catch((err) => {
         console.error('Failed to fetch hero data:', err);
       });
+  }, []);
+
+  // Force video to load and play immediately
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.load();
+      const playPromise = video.play();
+
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('Autoplay prevented, will play on interaction:', error);
+          const playOnInteraction = () => {
+            video.play();
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
+          };
+          document.addEventListener('click', playOnInteraction, { once: true });
+          document.addEventListener('touchstart', playOnInteraction, { once: true });
+        });
+      }
+    }
   }, []);
 
   const { displayText } = useTypingAnimation(heroData?.subtitle || '', 30);
@@ -95,13 +118,14 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="min-h-screen flex items-end justify-start relative overflow-hidden bg-brand-bg">
-      {/* Background Video with Fallback */}
+      {/* Background Video - Autoplay ASAP */}
       <video
+        ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
-        poster="/gia-heros-main-3200x2160.jpg"
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover object-top"
       >
         <source src="/PixVerse_V5_Image_Text_720P_slowly_transitions-home.mp4" type="video/mp4" />
