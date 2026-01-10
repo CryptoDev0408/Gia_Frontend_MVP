@@ -216,7 +216,7 @@ export const JoinRevolution: React.FC = () => {
                   </div>
 
                   {/* Phone */}
-                  <div>
+                  {/* <div>
                     <label className="block text-white text-xs font-medium mb-1">Phone</label>
                     <input
                       type="tel"
@@ -230,7 +230,7 @@ export const JoinRevolution: React.FC = () => {
                       required
                     />
                     {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone[0]}</p>}
-                  </div>
+                  </div> */}
 
                   {/* Consent Checkbox */}
                   <div className="flex items-center mt-8">

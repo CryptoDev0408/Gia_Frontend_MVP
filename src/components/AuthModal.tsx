@@ -36,20 +36,10 @@ export const AuthModal: React.FC = () => {
 
 		try {
 			if (isLogin) {
-				// Track sign-in event when clicking Sign In button in dialog
-				trackEvent('event_sign_in', {
-					event_category: 'authentication',
-					event_label: 'sign_in_dialog_button',
-					user_email: email
-				});
+				// Login will track event_sign_in after successful authentication
 				await login(email, password);
 			} else {
-				// Track sign-up event before registration
-				trackEvent('event_sign_up', {
-					event_category: 'authentication',
-					event_label: 'sign_up_button',
-					user_email: email
-				});
+				// Register user
 				await register(email, password, username);
 			}
 			// Modal will be closed by the context after successful auth

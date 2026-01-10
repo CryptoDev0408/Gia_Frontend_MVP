@@ -243,10 +243,6 @@ export const Header: React.FC = () => {
             ) : (
               <button
                 onClick={() => {
-                  trackEvent('event_sign_in', {
-                    event_category: 'navigation',
-                    event_label: 'sign_in_button'
-                  });
                   openAuthModal('login');
                 }}
                 className="text-white hover:text-brand-accent transition-colors cursor-pointer bg-transparent border-none p-0 font-normal text-base"

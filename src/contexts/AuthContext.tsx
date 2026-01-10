@@ -84,6 +84,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 				// Set default Authorization header
 				apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
+				// Track successful sign-in after backend validation
+				if (typeof window !== 'undefined' && window.gtag) {
+					window.gtag('event', 'event_sign_in', {
+						event_category: 'authentication',
+						event_label: 'successful_sign_in',
+						user_email: email,
+						timestamp: new Date().toISOString()
+					});
+				}
+
 				// Close modal on success
 				closeAuthModal();
 			}
@@ -114,6 +124,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 				// Set default Authorization header
 				apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+				// Track successful sign-up after backend validation
+				if (typeof window !== 'undefined' && window.gtag) {
+					window.gtag('event', 'event_sign_up', {
+						event_category: 'authentication',
+						event_label: 'successful_sign_up',
+						user_email: email,
+						timestamp: new Date().toISOString()
+					});
+				}
 
 				// Close modal on success
 				closeAuthModal();

@@ -97,7 +97,7 @@ export const Footer: React.FC = () => {
                       <li key={i}>
                         {item.name}
                         <br />
-                        <span style={{ color: "rgb(117, 147, 171)" }}>{'contact@giafashion.io'}</span> {/* Green color */}
+                        <span style={{ color: "rgb(95, 144, 204)" }}>{'contact@giafashion.io'}</span> {/* Green color */}
                       </li>
                     );
                   }
