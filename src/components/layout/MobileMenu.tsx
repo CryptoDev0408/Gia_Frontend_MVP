@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { trackEvent } from '../../utils/analytics';
 // import { Button } from '../ui/Button';
 
@@ -36,7 +36,6 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   // button,
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   // const formatAddress = (address: string) => {
   //   return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -70,35 +69,27 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
     // Handle hero section links (/, #, or empty)
     if (link === '/' || link === '#' || link === '') {
-      if (location.pathname !== '/') {
-        navigate('/', { replace: true });
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 100);
-      } else {
+      navigate('/');
+      setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      }, 100);
       return;
     }
 
-    // Handle section anchors (#about, #team, etc.)
+    // Handle section anchors (#about, #team, etc.) - Update URL and scroll
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
 
-      if (location.pathname !== '/') {
-        navigate('/', { replace: true });
-        setTimeout(() => {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      } else {
+      // Navigate to section route (updates URL to /about, /team, etc.)
+      navigate(`/${sectionId}`);
+
+      // Scroll to section after navigation
+      setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }
+      }, 100);
       return;
     }
 

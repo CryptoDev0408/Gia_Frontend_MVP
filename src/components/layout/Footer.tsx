@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { SocialLinks } from '../ui/SocialLinks';
 
@@ -31,52 +31,33 @@ interface FooterData {
 export const Footer: React.FC = () => {
   const [data, setData] = useState<FooterData | null>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleFooterLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
     e.preventDefault();
 
     // Handle hero section links (/, #, or empty)
     if (link === '/' || link === '#' || link === '') {
-      if (location.pathname !== '/') {
-        navigate('/', { replace: true });
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }, 100);
-      } else {
+      navigate('/');
+      setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+      }, 100);
       return;
     }
 
-    // Handle section anchors (#about, #team, etc.)
+    // Handle section anchors (#about, #team, etc.) - Update URL and scroll
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
 
-      // Special case: #privacy and #policy are separate pages, not sections
-      if (sectionId === 'privacy' || sectionId === 'policy') {
-        // Use replace to avoid adding hash to history
-        window.history.replaceState(null, '', '/');
-        navigate(`/${sectionId}`, { replace: true });
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        return;
-      }
+      // Navigate to section route (updates URL to /about, /team, etc.)
+      navigate(`/${sectionId}`);
 
-      // For other section anchors, scroll to section on home page
-      if (location.pathname !== '/') {
-        navigate('/', { replace: true });
-        setTimeout(() => {
-          const element = document.getElementById(sectionId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
-      } else {
+      // Scroll to section after navigation
+      setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }
+      }, 100);
       return;
     }
 

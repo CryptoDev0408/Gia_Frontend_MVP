@@ -64,6 +64,73 @@ function App() {
                 }
               />
 
+              {/* Section Routes - same content as home but with different URL */}
+              <Route
+                path="/about"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+              <Route
+                path="/whitepaper"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+              <Route
+                path="/team"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+              <Route
+                path="/faq"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+              <Route
+                path="/join"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+
               {/* AI Blog Page */}
               <Route path="/ai-blog" element={<AIBlogPage />} />
 

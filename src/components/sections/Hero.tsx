@@ -130,14 +130,14 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="min-h-screen flex items-end justify-start relative overflow-hidden bg-brand-bg">
-      {/* Background Video with Poster - Smooth Loading */}
+      {/* Background Video with Poster - Optimized for fastest loading */}
       <video
         ref={videoRef}
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         poster="/gia-heros-main-3200x2160.jpg"
         className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ${videoReady ? 'opacity-100' : 'opacity-0'
           }`}
