@@ -97,40 +97,47 @@ export const Header: React.FC = () => {
       }
     }
 
-    // Handle # or empty link as hero section (scroll to top)
-    if (link === '#' || link === '') {
+    // Handle hero section links (/, #, or empty)
+    if (link === '/' || link === '#' || link === '') {
       if (location.pathname !== '/') {
-        navigate('/');
+        // Navigate to home, then scroll to top
+        navigate('/', { replace: true });
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
       } else {
+        // Already on home, just scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
       return;
     }
 
-    // Handle section anchors (links starting with #)
+    // Handle section anchors (#about, #team, etc.)
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
+
       if (location.pathname !== '/') {
-        navigate('/');
+        // Navigate to home first, then scroll to section
+        navigate('/', { replace: true });
         setTimeout(() => {
           const element = document.getElementById(sectionId);
           if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }, 100);
       } else {
+        // Already on home, just scroll to section
         const element = document.getElementById(sectionId);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
-    } else {
-      // Regular link, use navigate
-      navigate(link);
+      return;
     }
+
+    // Regular route navigation (/privacy, /ai-blog, etc.)
+    navigate(link);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -181,7 +188,7 @@ export const Header: React.FC = () => {
             {menuItems.map((item) => (
               <a
                 key={item.text}
-                href={item.link}
+                href="#"
                 onClick={(e) => handleNavClick(e, item.link, item.text)}
                 className="text-white hover:text-brand-accent transition-colors cursor-pointer"
               >
@@ -189,7 +196,7 @@ export const Header: React.FC = () => {
               </a>
             ))}
             {/* AI Blog Link */}
-            <Link
+            {/* <Link
               to="/ai-blog"
               onClick={() => {
                 trackEvent('event_nav_btn_aiblog', {
@@ -201,7 +208,7 @@ export const Header: React.FC = () => {
               className="text-white hover:text-brand-accent transition-colors cursor-pointer"
             >
               AI Blog
-            </Link>
+            </Link> */}
             {/* Users Link - Admin Only */}
             {isAuthenticated && user?.role === 'ADMIN' && (
               <Link

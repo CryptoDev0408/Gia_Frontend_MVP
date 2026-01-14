@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { SocialLinks } from '../ui/SocialLinks';
 
@@ -29,6 +30,60 @@ interface FooterData {
 
 export const Footer: React.FC = () => {
   const [data, setData] = useState<FooterData | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleFooterLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, link: string) => {
+    e.preventDefault();
+
+    // Handle hero section links (/, #, or empty)
+    if (link === '/' || link === '#' || link === '') {
+      if (location.pathname !== '/') {
+        navigate('/', { replace: true });
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    // Handle section anchors (#about, #team, etc.)
+    if (link.startsWith('#')) {
+      const sectionId = link.substring(1);
+
+      // Special case: #privacy and #policy are separate pages, not sections
+      if (sectionId === 'privacy' || sectionId === 'policy') {
+        // Use replace to avoid adding hash to history
+        window.history.replaceState(null, '', '/');
+        navigate(`/${sectionId}`, { replace: true });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // For other section anchors, scroll to section on home page
+      if (location.pathname !== '/') {
+        navigate('/', { replace: true });
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      } else {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+      return;
+    }
+
+    // Regular route navigation
+    navigate(link);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     // ✅ Check localStorage first
@@ -106,8 +161,9 @@ export const Footer: React.FC = () => {
                   return (
                     <li key={i}>
                       <a
-                        href={item.link}
-                        className="text-brand-secondary hover:text-brand-accent transition-colors"
+                        href="#"
+                        onClick={(e) => handleFooterLinkClick(e, item.link)}
+                        className="text-brand-secondary hover:text-brand-accent transition-colors cursor-pointer"
                       >
                         {item.name}
                       </a>

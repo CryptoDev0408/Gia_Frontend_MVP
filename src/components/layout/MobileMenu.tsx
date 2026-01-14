@@ -68,10 +68,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
       }
     }
 
-    // Handle # or empty link as hero section (scroll to top)
-    if (link === '#' || link === '') {
+    // Handle hero section links (/, #, or empty)
+    if (link === '/' || link === '#' || link === '') {
       if (location.pathname !== '/') {
-        navigate('/');
+        navigate('/', { replace: true });
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 100);
@@ -81,26 +81,30 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
       return;
     }
 
-    // Handle section anchors (links starting with #)
+    // Handle section anchors (#about, #team, etc.)
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
+
       if (location.pathname !== '/') {
-        navigate('/');
+        navigate('/', { replace: true });
         setTimeout(() => {
           const element = document.getElementById(sectionId);
           if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         }, 100);
       } else {
         const element = document.getElementById(sectionId);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
-    } else {
-      navigate(link);
+      return;
     }
+
+    // Regular route navigation
+    navigate(link);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const menuVariants = {
@@ -120,7 +124,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
         {menuItems.map((item) => (
           <a
             key={item.text}
-            href={item.link}
+            href="#"
             className="block text-white hover:text-brand-accent transition-colors text-center cursor-pointer"
             onClick={(e) => handleNavClick(e, item.link, item.text)}
           >
