@@ -48,6 +48,18 @@ export const Footer: React.FC = () => {
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
 
+      // Special case: #whitepaper should navigate to /pitch-deck
+      if (sectionId === 'whitepaper') {
+        navigate('/pitch-deck');
+        setTimeout(() => {
+          const element = document.getElementById('whitepaper');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+        return;
+      }
+
       // Navigate to section route (updates URL to /about, /team, etc.)
       navigate(`/${sectionId}`);
 

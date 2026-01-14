@@ -92,6 +92,19 @@ function App() {
                 }
               />
               <Route
+                path="/pitch-deck"
+                element={
+                  <>
+                    <Hero />
+                    <About />
+                    <Whitepaper />
+                    <Teams />
+                    <FAQ />
+                    <JoinRevolution />
+                  </>
+                }
+              />
+              <Route
                 path="/team"
                 element={
                   <>

@@ -31,7 +31,7 @@ const DEFAULT_HEADER_DATA: HeaderData = {
   menu_items: JSON.stringify([
     { text: "Home", link: "#" },
     { text: "About", link: "#about" },
-    { text: "Pitch Deck", link: "#whitepaper" },
+    { text: "Pitch Deck", link: "#pitch-deck" },
     { text: "FAQ", link: "#faq" },
     { text: "Join", link: "#join" },
     { text: "Team", link: "#team" }
@@ -108,6 +108,18 @@ export const Header: React.FC = () => {
     // Handle section anchors (#about, #team, etc.) - Update URL and scroll
     if (link.startsWith('#')) {
       const sectionId = link.substring(1);
+
+      // Special case: #whitepaper should navigate to /pitch-deck
+      if (sectionId === 'whitepaper') {
+        navigate('/pitch-deck');
+        setTimeout(() => {
+          const element = document.getElementById('whitepaper');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+        return;
+      }
 
       // Navigate to section route (updates URL to /about, /team, etc.)
       navigate(`/${sectionId}`);
