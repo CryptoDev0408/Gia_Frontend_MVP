@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/Button';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { trackEvent } from '../utils/analytics';
+// import { trackEvent } from '../utils/analytics';
 
 export const AuthModal: React.FC = () => {
 	const { showAuthModal, authModalMode, closeAuthModal, login, register } = useAuth();
