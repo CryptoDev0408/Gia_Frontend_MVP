@@ -25,8 +25,26 @@ interface HeaderData {
   button: string;     // stored as JSON string in API
 }
 
+// Default header data for instant display (no loading state)
+const DEFAULT_HEADER_DATA: HeaderData = {
+  logo: "/uploads/logo.png",
+  menu_items: JSON.stringify([
+    { text: "Home", link: "#" },
+    { text: "About", link: "#about" },
+    { text: "Pitch Deck", link: "#whitepaper" },
+    { text: "FAQ", link: "#faq" },
+    { text: "Join", link: "#join" },
+    { text: "Team", link: "#team" }
+  ]),
+  button: JSON.stringify({ text: "Connect Wallet", link: "/get-started" })
+};
+
 export const Header: React.FC = () => {
-  const [headerData, setHeaderData] = useState<HeaderData | null>(null);
+  // Initialize with cache or default data (no null state)
+  const [headerData, setHeaderData] = useState<HeaderData>(() => {
+    const cachedData = localStorage.getItem("headerData");
+    return cachedData ? JSON.parse(cachedData) : DEFAULT_HEADER_DATA;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   // const { account, isConnected, isConnecting, connect, disconnect } = useWallet();
@@ -35,13 +53,7 @@ export const Header: React.FC = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Try localStorage first
-    const cachedData = localStorage.getItem("headerData");
-    if (cachedData) {
-      setHeaderData(JSON.parse(cachedData));
-    }
-
-    // Always fetch fresh data (background update)
+    // Fetch fresh data in background and update if changed
     const fetchHeader = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/header`);
@@ -49,6 +61,7 @@ export const Header: React.FC = () => {
         localStorage.setItem("headerData", JSON.stringify(res.data));
       } catch (err) {
         console.error("Error fetching header:", err);
+        // Keep using default or cached data on error
       }
     };
 
@@ -108,8 +121,6 @@ export const Header: React.FC = () => {
   };
 
   // const formatAddress = (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`;
-
-  if (!headerData) return <p className="text-white text-center py-4">Loading header...</p>;
 
   // Parse JSON strings safely or use directly if already parsed
   let menuItems: MenuItem[] = [];
