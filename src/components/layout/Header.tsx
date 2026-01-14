@@ -196,7 +196,7 @@ export const Header: React.FC = () => {
               </a>
             ))}
             {/* AI Blog Link */}
-            {/* <Link
+            <Link
               to="/ai-blog"
               onClick={() => {
                 trackEvent('event_nav_btn_aiblog', {
@@ -208,7 +208,7 @@ export const Header: React.FC = () => {
               className="text-white hover:text-brand-accent transition-colors cursor-pointer"
             >
               AI Blog
-            </Link> */}
+            </Link>
             {/* Users Link - Admin Only */}
             {isAuthenticated && user?.role === 'ADMIN' && (
               <Link
