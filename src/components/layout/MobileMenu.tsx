@@ -68,17 +68,32 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
       }
     }
 
-    if (link.startsWith('#')) {
+    // Handle # or empty link as hero section (scroll to top)
+    if (link === '#' || link === '') {
       if (location.pathname !== '/') {
         navigate('/');
         setTimeout(() => {
-          const element = document.querySelector(link);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 100);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      return;
+    }
+
+    // Handle section anchors (links starting with #)
+    if (link.startsWith('#')) {
+      const sectionId = link.substring(1);
+      if (location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const element = document.getElementById(sectionId);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
           }
         }, 100);
       } else {
-        const element = document.querySelector(link);
+        const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }

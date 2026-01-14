@@ -12,11 +12,12 @@ export default defineConfig({
     }
   }, // 👈 this comma was missing
   server: {
+    host: "0.0.0.0",
     port: 5004,
-    allowedHosts: ["gia.blxrbsc.com", "admin.blxrbsc.com","giafashion.io", "admin.giafashion.io"], // 👈 Added both
+    allowedHosts: ["gia.blxrbsc.com", "admin.blxrbsc.com", "giafashion.io", "admin.giafashion.io"], // 👈 Added both
   },
   preview: {
-    allowedHosts: ["gia.blxrbsc.com", "admin.blxrbsc.com","giafashion.io", "admin.giafashion.io", "api.giafashion.io"], // 👈 Added both
+    allowedHosts: ["gia.blxrbsc.com", "admin.blxrbsc.com", "giafashion.io", "admin.giafashion.io", "api.giafashion.io"], // 👈 Added both
   },
 })
 
