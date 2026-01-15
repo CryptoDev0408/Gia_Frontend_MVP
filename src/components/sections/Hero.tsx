@@ -33,7 +33,7 @@ export const Hero: React.FC = () => {
     const cached = localStorage.getItem("heroData");
     return cached ? JSON.parse(cached) : null;
   });
-  const [videoReady, setVideoReady] = useState(false);
+  // const [videoReady, setVideoReady] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -57,17 +57,12 @@ export const Hero: React.FC = () => {
       });
   }, []);
 
-  // Optimized video loading with smooth transition
+  // Optimized video loading - show immediately for fast CDN delivery
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
-      // Set video ready when it can play through
-      const handleCanPlay = () => {
-        setVideoReady(true);
-      };
-
-      video.addEventListener('canplaythrough', handleCanPlay);
-      video.load();
+      // Set video ready immediately for CDN-hosted videos
+      // setVideoReady(true);
 
       const playPromise = video.play();
 
@@ -83,10 +78,6 @@ export const Hero: React.FC = () => {
           document.addEventListener('touchstart', playOnInteraction, { once: true });
         });
       }
-
-      return () => {
-        video.removeEventListener('canplaythrough', handleCanPlay);
-      };
     }
   }, []);
 
@@ -130,7 +121,7 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="min-h-screen flex items-end justify-start relative overflow-hidden bg-brand-bg">
-      {/* Background Video with Poster - Optimized for fastest loading */}
+      {/* Background Video - CDN hosted for instant loading */}
       <video
         ref={videoRef}
         autoPlay
@@ -138,25 +129,15 @@ export const Hero: React.FC = () => {
         loop
         playsInline
         preload="auto"
+        className="absolute inset-0 w-full h-full object-cover object-top"
         poster="/gia-heros-main-3200x2160.jpg"
-        className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-700 ${videoReady ? 'opacity-100' : 'opacity-0'
-          }`}
         style={{
-          willChange: 'opacity',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden'
         }}
       >
-        <source src="/PixVerse_V5_Image_Text_720P_slowly_transitions-home.mp4" type="video/mp4" />
+        <source src="https://gia-vercel-frontend-video-upload.vercel.app/hero.mp4" type="video/mp4" />
       </video>
-
-      {/* Poster Image Fallback - Shows while video loads */}
-      {!videoReady && (
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/gia-heros-main-3200x2160.jpg)' }}
-        />
-      )}
 
       {/* Video Overlay */}
       {/* <div className="absolute inset-0 bg-gradient-to-t from-brand-bg/80 via-brand-bg/60 to-transparent" /> */}
