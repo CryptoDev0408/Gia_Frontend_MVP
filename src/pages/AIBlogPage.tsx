@@ -730,10 +730,11 @@ export const AIBlogPage: React.FC = () => {
 
 			{/* Main Content Section */}
 			< section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8" >
-				{/* Admin Filter Section */}
-				{
-					isAdmin && (
-						<div className="flex flex-wrap gap-3 justify-center items-center mb-6">
+
+				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+					{/* Left Side: Admin Filter Buttons */}
+					{isAdmin && (
+						<div className="flex flex-wrap gap-3 items-center">
 							<button
 								onClick={() => setBlogFilter('draft')}
 								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
@@ -762,19 +763,8 @@ export const AIBlogPage: React.FC = () => {
 								All Blogs ({blogs.length})
 							</button>
 						</div>
-					)
-				}
+					)}
 
-				{/* Total Blogs Count */}
-				{/* <div className="flex items-center justify-center mb-4">
-					<div className="flex items-center gap-2 px-4 py-2 bg-brand-secondary/10 border border-brand-secondary/20 rounded-lg">
-						<span className="text-brand-secondary text-sm">Total Blogs:</span>
-						<span className="text-brand-accent font-semibold">{totalBlogs}</span>
-					</div>
-				</div> */}
-
-
-				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
 					{/* Right Side Buttons */}
 					<div className="flex items-center gap-3 flex-wrap ml-auto">
 						{/* Scraping Button - Admin Only */}
