@@ -784,20 +784,7 @@ export const AIBlogPage: React.FC = () => {
 							</motion.button>
 						)}
 
-						{/* Refresh Button */}
-						<motion.button
-							onClick={fetchBlogs}
-							disabled={loading || scraping}
-							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
-							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${loading || scraping
-								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
-								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
-								}`}
-						>
-							<ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-							Refresh
-						</motion.button>
+
 					</div>
 				</div>
 
@@ -828,7 +815,7 @@ export const AIBlogPage: React.FC = () => {
 							<button
 								onClick={() => handlePageChange(1)}
 								disabled={currentPage === 1}
-								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								className="cursor-pointer ml-4 p-2 border border-brand-secondary/20 text-brand-secondary hover:bg-brand-accent/20 hover:text-brand-accent hover:border-brand-accent/50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all" style={{ borderRadius: '50%' }}
 							>
 								<ChevronDoubleLeftIcon className="w-4 h-4" />
 							</button>
@@ -837,7 +824,8 @@ export const AIBlogPage: React.FC = () => {
 							<button
 								onClick={() => handlePageChange(currentPage - 1)}
 								disabled={currentPage === 1}
-								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								className="cursor-pointer p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								style={{ borderRadius: '50%' }}
 							>
 								<ChevronLeftIcon className="w-4 h-4" />
 							</button>
@@ -848,7 +836,7 @@ export const AIBlogPage: React.FC = () => {
 									key={idx}
 									onClick={() => typeof page === 'number' && handlePageChange(page)}
 									disabled={page === '...' || page === currentPage}
-									className={`min-w-[2.5rem] h-10 flex items-center justify-center text-sm transition-all ${page === currentPage
+									className={`cursor-pointer min-w-[2.5rem] h-10 flex items-center justify-center text-sm transition-all ${page === currentPage
 										? 'bg-brand-accent text-white shadow-lg shadow-brand-accent/50 border-2 border-brand-accent'
 										: page === '...'
 											? 'text-brand-secondary/50 cursor-default'
@@ -864,7 +852,8 @@ export const AIBlogPage: React.FC = () => {
 							<button
 								onClick={() => handlePageChange(currentPage + 1)}
 								disabled={currentPage === totalPages}
-								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								className="cursor-pointer p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								style={{ borderRadius: '50%' }}
 							>
 								<ChevronRightIcon className="w-4 h-4" />
 							</button>
@@ -873,12 +862,27 @@ export const AIBlogPage: React.FC = () => {
 							<button
 								onClick={() => handlePageChange(totalPages)}
 								disabled={currentPage === totalPages}
-								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+								className="cursor-pointer p-2 border border-brand-secondary/20 text-brand-secondary hover:bg-brand-accent/20 hover:text-brand-accent hover:border-brand-accent/50 hover:scale-110 disabled:opacity-30 disabled:cursor-not-allowed transition-all" style={{ borderRadius: '50%' }}
 							>
 								<ChevronDoubleRightIcon className="w-4 h-4" />
 							</button>
 						</div>
 					)}
+
+					{/* Refresh Button */}
+					<motion.button
+						onClick={fetchBlogs}
+						disabled={loading || scraping}
+						whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
+						whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
+						className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${loading || scraping
+							? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
+							: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
+							}`}
+					>
+						<ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+						Refresh
+					</motion.button>
 				</div>
 
 
