@@ -61,11 +61,38 @@ export const AIBlogPage: React.FC = () => {
 	const [pageSize, setPageSize] = useState(10);
 	const [totalBlogs, setTotalBlogs] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
+	// Counts for admin filter buttons
+	const [blogCounts, setBlogCounts] = useState({ draft: 0, published: 0, all: 0 });
+
+	// Fetch blog counts on mount
+	useEffect(() => {
+		fetchBlogCounts();
+	}, []);
 
 	// Fetch blogs from backend
 	useEffect(() => {
 		fetchBlogs();
-	}, [isAdmin, currentPage, pageSize]); // Refetch when admin status, page, or page size changes
+	}, [isAdmin, currentPage, pageSize, blogFilter]); // Refetch when admin status, page, page size, or filter changes
+
+	const fetchBlogCounts = async () => {
+		try {
+			console.log('[AIBlogPage] Fetching blog counts from /count endpoint...');
+			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}/count`);
+
+			console.log('[AIBlogPage] Count response:', response.data);
+
+			if (response.data.success && response.data.data.counts) {
+				const counts = response.data.data.counts;
+				console.log('[AIBlogPage] Setting counts:', counts);
+				setBlogCounts(counts);
+			} else {
+				console.warn('[AIBlogPage] Invalid count response:', response.data);
+			}
+		} catch (err: any) {
+			console.error('[AIBlogPage] Failed to fetch counts:', err);
+			console.error('[AIBlogPage] Error details:', err.response?.data);
+		}
+	};
 
 	const fetchBlogs = async () => {
 		try {
@@ -77,13 +104,12 @@ export const AIBlogPage: React.FC = () => {
 				isAuthenticated: !!user,
 				userRole: user?.role,
 				isAdmin,
-				includeUnapproved: isAdmin ? 'true' : 'false'
+				filter: blogFilter
 			});
 
-			// Admins can see unapproved blogs with includeUnapproved=true
-			// Regular users only see approved blogs (approved=1)
-			const includeUnapproved = isAdmin ? 'true' : 'false';
-			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=${includeUnapproved}&page=${currentPage}&limit=${pageSize}`);
+			// Build query params - admins can filter by draft/published/all
+			const filter = isAdmin ? blogFilter : 'published';
+			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?filter=${filter}&page=${currentPage}&limit=${pageSize}`);
 
 			const blogs = response.data.data.blogs;
 			const pagination = response.data.data.pagination;
@@ -94,6 +120,9 @@ export const AIBlogPage: React.FC = () => {
 			setBlogs(blogs);
 			setTotalBlogs(pagination.total);
 			setTotalPages(pagination.totalPages);
+
+			// Fetch counts from dedicated endpoint
+			fetchBlogCounts();
 		} catch (err: any) {
 			console.error('[AIBlogPage] Failed to fetch blogs:', {
 				error: err,
@@ -417,14 +446,8 @@ export const AIBlogPage: React.FC = () => {
 		return date.toLocaleDateString();
 	};
 
-	// Filter blogs based on admin filter selection
-	const filteredBlogs = isAdmin
-		? blogs.filter(blog => {
-			if (blogFilter === 'draft') return blog.approved === 0;
-			if (blogFilter === 'published') return blog.approved === 1;
-			return true; // 'all'
-		})
-		: blogs.filter(blog => blog.approved === 1); // Regular users only see published
+	// Backend now handles filtering, so we use blogs directly
+	const filteredBlogs = blogs;
 
 	if (loading) {
 		return (
@@ -732,37 +755,45 @@ export const AIBlogPage: React.FC = () => {
 			< section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8" >
 
 				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
-					{/* Left Side: Admin Filter Buttons */}
-					{isAdmin && (
+					{/* Left Side: Admin Filter Buttons or Total Count */}
+					{isAdmin ? (
 						<div className="flex flex-wrap gap-3 items-center">
 							<button
-								onClick={() => setBlogFilter('draft')}
+								onClick={() => { setBlogFilter('draft'); setCurrentPage(1); }}
 								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
 									? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
-								Draft ({blogs.filter(b => b.approved === 0).length})
+								Draft ({blogCounts.draft})
 							</button>
 							<button
-								onClick={() => setBlogFilter('published')}
+								onClick={() => { setBlogFilter('published'); setCurrentPage(1); }}
 								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'published'
 									? 'bg-green-500/20 text-green-400 border border-green-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
-								Published ({blogs.filter(b => b.approved === 1).length})
+								Published ({blogCounts.published})
 							</button>
 							<button
-								onClick={() => setBlogFilter('all')}
+								onClick={() => { setBlogFilter('all'); setCurrentPage(1); }}
 								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'all'
 									? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
-								All Blogs ({blogs.length})
+								All Blogs ({blogCounts.all})
 							</button>
 						</div>
+					) : (
+						<>	</>
+						// <div className="flex items-center gap-2">
+						// 	<span className="text-brand-secondary text-sm">Total Blogs:</span>
+						// 	<span className="px-3 py-1 rounded-lg bg-brand-accent/20 text-brand-accent border border-brand-accent/50 text-sm font-semibold">
+						// 		{blogCounts.published}
+						// 	</span>
+						// </div>
 					)}
 
 					{/* Right Side Buttons */}
@@ -787,25 +818,28 @@ export const AIBlogPage: React.FC = () => {
 
 					</div>
 				</div>
-
-				{/* Pagination Controls - Top */}
 				<div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
 					{/* Left: Blogs Per Page Selector */}
 					<div className="flex items-center gap-2">
-						<span className="text-brand-secondary text-sm">Blogs Per Page:</span>
-						<select
-							value={pageSize}
-							onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-							className="px-3 py-1.5 rounded-lg text-sm border border-brand-secondary/20 text-brand-secondary cursor-pointer transition-all hover:border-brand-accent/50"
-							style={{ backgroundColor: 'rgb(31, 41, 55)' }}
-						>
-							<option value={2} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>2</option>
-							<option value={5} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>5</option>
-							<option value={10} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>10</option>
-							<option value={20} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>20</option>
-							<option value={50} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>50</option>
-							<option value={100} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>100</option>
-						</select>
+						<div className="flex items-center gap-2">
+							<span className="text-brand-secondary text-sm">Blogs Per Page:</span>
+							<select
+								value={pageSize}
+								onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+								className="px-3 py-1.5 rounded-lg text-sm border border-brand-secondary/20 text-brand-secondary cursor-pointer transition-all hover:border-brand-accent/50"
+								style={{ backgroundColor: 'rgb(31, 41, 55)' }}
+							>
+								<option value={2} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>2</option>
+								<option value={5} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>5</option>
+								<option value={10} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>10</option>
+								<option value={20} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>20</option>
+								<option value={50} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>50</option>
+								<option value={100} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>100</option>
+							</select>
+						</div>
+						<div className="ml-2 flex items-center gap-2">
+							<span className="text-brand-secondary text-sm">Total: {blogCounts.all} Blogs</span>
+						</div>
 					</div>
 
 					{/* Right: Page Navigation */}
