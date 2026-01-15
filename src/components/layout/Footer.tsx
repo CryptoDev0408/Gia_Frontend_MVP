@@ -68,6 +68,8 @@ export const Footer: React.FC = () => {
         const element = document.getElementById(sectionId);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }, 100);
       return;
