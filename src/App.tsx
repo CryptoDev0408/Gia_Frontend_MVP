@@ -40,11 +40,46 @@ function PageViewTracker() {
   return null;
 }
 
+// Component to handle auto-scrolling to sections based on route
+function SectionScroller() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Map routes to section IDs
+    const routeToSectionMap: { [key: string]: string } = {
+      '/about': 'about',
+      '/whitepaper': 'whitepaper',
+      '/pitch-deck': 'whitepaper',
+      '/team': 'team',
+      '/faq': 'faq',
+      '/join': 'join-revolution'
+    };
+
+    const sectionId = routeToSectionMap[location.pathname];
+
+    if (sectionId) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else if (location.pathname === '/') {
+      // Scroll to top for home page
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <PageViewTracker />
+        <SectionScroller />
         <div className="min-h-screen bg-brand-bg overflow-x-hidden">
           <Header />
           <main>
