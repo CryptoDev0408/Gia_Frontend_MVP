@@ -59,7 +59,7 @@ export const AIBlogPage: React.FC = () => {
 	// Pagination state
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
-	const [totalBlogs, setTotalBlogs] = useState(0);
+	// const [totalBlogs, setTotalBlogs] = useState(0);
 	const [totalPages, setTotalPages] = useState(0);
 	// Counts for admin filter buttons
 	const [blogCounts, setBlogCounts] = useState({ draft: 0, published: 0, all: 0 });
@@ -118,7 +118,7 @@ export const AIBlogPage: React.FC = () => {
 			console.log('[AIBlogPage] Pagination:', pagination);
 
 			setBlogs(blogs);
-			setTotalBlogs(pagination.total);
+			// setTotalBlogs(pagination.total);
 			setTotalPages(pagination.totalPages);
 
 			// Fetch counts from dedicated endpoint
