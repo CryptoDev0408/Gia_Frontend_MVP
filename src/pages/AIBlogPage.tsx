@@ -443,7 +443,7 @@ export const AIBlogPage: React.FC = () => {
 										{/* Title and Top Actions */}
 										<div className="flex items-start justify-between mb-6">
 											<div className="flex-1">
-												<h2 className="text-3xl text-gradient mb-3">{selectedCard.title}</h2>
+												<h2 className="text-3xl mb-3" style={{ color: 'rgb(95, 144, 204)' }}>{selectedCard.title}</h2>
 												{/* <div className="px-4 py-2 bg-black text-white rounded-lg uppercase text-sm hover:bg-brand-accent hover:scale-105 transition-all duration-300 cursor-pointer shadow-lg inline-block">
 													{selectedCard.platform}
 												</div> */}
@@ -504,7 +504,7 @@ export const AIBlogPage: React.FC = () => {
 														onClick={() => setExpandedInsight(!expandedInsight)}
 														className="text-brand-accent text-xs mt-2 hover:underline"
 													>
-														{expandedInsight ? 'Show less' : 'Show more...'}
+														{expandedInsight ? 'Show less...' : 'Show more...'}
 													</button>
 												)}
 
@@ -816,7 +816,7 @@ export const AIBlogPage: React.FC = () => {
 														Remove
 													</button>
 												</div>
-											)}										<h2 className="text-xl text-gradient mb-3">{blog.title}</h2>
+											)}										<h2 className="text-xl mb-3" style={{ color: 'rgb(95, 144, 204)' }}>{blog.title}</h2>
 
 
 											{/* AI Insight */}
@@ -838,7 +838,7 @@ export const AIBlogPage: React.FC = () => {
 														}}
 														className="text-brand-accent text-xs mt-1 hover:underline"
 													>
-														{isExpanded ? 'Show less' : 'Show more...'}
+														{isExpanded ? 'Show less...' : 'Show more...'}
 													</button>
 												)}
 											</div>
@@ -892,7 +892,7 @@ export const AIBlogPage: React.FC = () => {
 									>
 										<div className="p-6">
 											<div className="flex items-start justify-between mb-4">
-												<h2 className="text-2xl text-gradient font-bold flex-1">{blog.title}</h2>
+												<h2 className="text-2xl font-bold flex-1" style={{ color: 'rgb(95, 144, 204)' }}>{blog.title}</h2>
 												<div className="flex items-center gap-2 ml-3">
 													<span className="px-3 py-1 bg-brand-accent/20 text-brand-accent rounded-full text-xs font-semibold uppercase">{blog.platform}</span>
 													{/* Admin Controls */}
@@ -938,7 +938,7 @@ export const AIBlogPage: React.FC = () => {
 												onClick={() => toggleExpand(blog.id)}
 												className="w-full py-3 bg-brand-accent/20 text-brand-accent rounded-xl font-semibold text-sm flex items-center justify-center gap-2 cursor-pointer"
 											>
-												{isExpanded ? 'Show Less' : 'View Details'}
+												{isExpanded ? 'Show Less...' : 'View Details'}
 												<ChevronDownIcon className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
 											</button>
 										</div>
