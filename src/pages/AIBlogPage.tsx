@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon, PaperAirplaneIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -56,10 +56,16 @@ export const AIBlogPage: React.FC = () => {
 	const [blogFilter, setBlogFilter] = useState<'all' | 'draft' | 'published'>('all'); // Admin filter
 	const [expandedInsight, setExpandedInsight] = useState(false);
 
+	// Pagination state
+	const [currentPage, setCurrentPage] = useState(1);
+	const [pageSize, setPageSize] = useState(10);
+	const [totalBlogs, setTotalBlogs] = useState(0);
+	const [totalPages, setTotalPages] = useState(0);
+
 	// Fetch blogs from backend
 	useEffect(() => {
 		fetchBlogs();
-	}, [isAdmin]); // Refetch when admin status changes
+	}, [isAdmin, currentPage, pageSize]); // Refetch when admin status, page, or page size changes
 
 	const fetchBlogs = async () => {
 		try {
@@ -77,12 +83,17 @@ export const AIBlogPage: React.FC = () => {
 			// Admins can see unapproved blogs with includeUnapproved=true
 			// Regular users only see approved blogs (approved=1)
 			const includeUnapproved = isAdmin ? 'true' : 'false';
-			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=${includeUnapproved}`);
+			const response = await apiClient.get(`${API_ENDPOINTS.BLOGS}?includeUnapproved=${includeUnapproved}&page=${currentPage}&limit=${pageSize}`);
 
-			console.log("AAAAAAAAAAAAAAAAAAAAAAAAA : ", response.data.data.blogs)
+			const blogs = response.data.data.blogs;
+			const pagination = response.data.data.pagination;
 
-			console.log('[AIBlogPage] Blogs fetched successfully:', response.data.data.blogs.length, 'blogs');
-			setBlogs(response.data.data.blogs);
+			console.log('[AIBlogPage] Blogs fetched successfully:', blogs.length, 'blogs');
+			console.log('[AIBlogPage] Pagination:', pagination);
+
+			setBlogs(blogs);
+			setTotalBlogs(pagination.total);
+			setTotalPages(pagination.totalPages);
 		} catch (err: any) {
 			console.error('[AIBlogPage] Failed to fetch blogs:', {
 				error: err,
@@ -123,6 +134,54 @@ export const AIBlogPage: React.FC = () => {
 		} finally {
 			setScraping(false);
 		}
+	};
+
+	const handlePageChange = (page: number) => {
+		setCurrentPage(page);
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	};
+
+	const handlePageSizeChange = (size: number) => {
+		setPageSize(size);
+		setCurrentPage(1); // Reset to first page when changing page size
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	};
+
+	// Generate page numbers with ellipsis
+	const getPageNumbers = () => {
+		const pages: (number | string)[] = [];
+		const maxVisiblePages = 5;
+
+		if (totalPages <= maxVisiblePages + 2) {
+			// Show all pages if total is small
+			for (let i = 1; i <= totalPages; i++) {
+				pages.push(i);
+			}
+		} else {
+			// Always show first page
+			pages.push(1);
+
+			if (currentPage > 3) {
+				pages.push('...');
+			}
+
+			// Show pages around current page
+			const start = Math.max(2, currentPage - 1);
+			const end = Math.min(totalPages - 1, currentPage + 1);
+
+			for (let i = start; i <= end; i++) {
+				pages.push(i);
+			}
+
+			if (currentPage < totalPages - 2) {
+				pages.push('...');
+			}
+
+			// Always show last page
+			pages.push(totalPages);
+		}
+
+		return pages;
 	};
 
 	const handleApproveBlog = async (blogId: number) => {
@@ -706,6 +765,94 @@ export const AIBlogPage: React.FC = () => {
 					)
 				}
 
+				{/* Total Blogs Count */}
+				<div className="flex items-center justify-center mb-4">
+					<div className="flex items-center gap-2 px-4 py-2 bg-brand-secondary/10 border border-brand-secondary/20 rounded-lg">
+						<span className="text-brand-secondary text-sm">Total Blogs:</span>
+						<span className="text-brand-accent font-semibold">{totalBlogs}</span>
+					</div>
+				</div>
+
+				{/* Pagination Controls - Top */}
+				<div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+					{/* Left: Blogs Per Page Selector */}
+					<div className="flex items-center gap-2">
+						<span className="text-brand-secondary text-sm">Blogs Per Page:</span>
+						<select
+							value={pageSize}
+							onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+							className="px-3 py-1.5 rounded-lg text-sm border border-brand-secondary/20 text-brand-secondary cursor-pointer transition-all hover:border-brand-accent/50"
+							style={{ backgroundColor: 'rgb(31, 41, 55)' }}
+						>
+							<option value={2} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>2</option>
+							<option value={5} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>5</option>
+							<option value={10} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>10</option>
+							<option value={20} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>20</option>
+							<option value={50} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>50</option>
+							<option value={100} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>100</option>
+						</select>
+					</div>
+
+					{/* Right: Page Navigation */}
+					{totalPages > 1 && (
+						<div className="flex items-center gap-2">
+							{/* First Page */}
+							<button
+								onClick={() => handlePageChange(1)}
+								disabled={currentPage === 1}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronDoubleLeftIcon className="w-4 h-4" />
+							</button>
+
+							{/* Previous Page */}
+							<button
+								onClick={() => handlePageChange(currentPage - 1)}
+								disabled={currentPage === 1}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronLeftIcon className="w-4 h-4" />
+							</button>
+
+							{/* Page Numbers */}
+							{getPageNumbers().map((page, idx) => (
+								<button
+									key={idx}
+									onClick={() => typeof page === 'number' && handlePageChange(page)}
+									disabled={page === '...' || page === currentPage}
+									className={`min-w-[2.5rem] h-10 flex items-center justify-center text-sm transition-all ${page === currentPage
+										? 'bg-brand-accent text-white shadow-lg shadow-brand-accent/50 border-2 border-brand-accent'
+										: page === '...'
+											? 'text-brand-secondary/50 cursor-default'
+											: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20'
+										}`}
+									style={{ borderRadius: '50%' }}
+								>
+									{page}
+								</button>
+							))}
+
+							{/* Next Page */}
+							<button
+								onClick={() => handlePageChange(currentPage + 1)}
+								disabled={currentPage === totalPages}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronRightIcon className="w-4 h-4" />
+							</button>
+
+							{/* Last Page */}
+							<button
+								onClick={() => handlePageChange(totalPages)}
+								disabled={currentPage === totalPages}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronDoubleRightIcon className="w-4 h-4" />
+							</button>
+						</div>
+					)}
+				</div>
+
 				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
 					{/* Right Side Buttons */}
 					<div className="flex items-center gap-3 flex-wrap ml-auto">
@@ -1003,6 +1150,86 @@ export const AIBlogPage: React.FC = () => {
 						</div>
 					)
 				}
+
+				{/* Pagination Controls - Bottom */}
+				<div className="flex items-center justify-between gap-4 mt-8 flex-wrap">
+					{/* Left: Blogs Per Page Selector */}
+					<div className="flex items-center gap-2">
+						<span className="text-brand-secondary text-sm">Blogs Per Page:</span>
+						<select
+							value={pageSize}
+							onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+							className="px-3 py-1.5 rounded-lg text-sm border border-brand-secondary/20 text-brand-secondary cursor-pointer transition-all hover:border-brand-accent/50"
+							style={{ backgroundColor: 'rgb(31, 41, 55)' }}
+						>
+							<option value={2} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>2</option>
+							<option value={5} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>5</option>
+							<option value={10} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>10</option>
+							<option value={20} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>20</option>
+							<option value={50} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>50</option>
+							<option value={100} style={{ backgroundColor: 'rgb(31, 41, 55)' }}>100</option>
+						</select>
+					</div>
+
+					{/* Right: Page Navigation */}
+					{totalPages > 1 && (
+						<div className="flex items-center gap-2">
+							{/* First Page */}
+							<button
+								onClick={() => handlePageChange(1)}
+								disabled={currentPage === 1}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronDoubleLeftIcon className="w-4 h-4" />
+							</button>
+
+							{/* Previous Page */}
+							<button
+								onClick={() => handlePageChange(currentPage - 1)}
+								disabled={currentPage === 1}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronLeftIcon className="w-4 h-4" />
+							</button>
+
+							{/* Page Numbers */}
+							{getPageNumbers().map((page, idx) => (
+								<button
+									key={idx}
+									onClick={() => typeof page === 'number' && handlePageChange(page)}
+									disabled={page === '...' || page === currentPage}
+									className={`min-w-[2.5rem] h-10 flex items-center justify-center text-sm transition-all ${page === currentPage
+										? 'bg-brand-accent text-white shadow-lg shadow-brand-accent/50 border-2 border-brand-accent'
+										: page === '...'
+											? 'text-brand-secondary/50 cursor-default'
+											: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20'
+										}`}
+									style={{ borderRadius: '50%' }}
+								>
+									{page}
+								</button>
+							))}
+
+							{/* Next Page */}
+							<button
+								onClick={() => handlePageChange(currentPage + 1)}
+								disabled={currentPage === totalPages}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronRightIcon className="w-4 h-4" />
+							</button>
+
+							{/* Last Page */}
+							<button
+								onClick={() => handlePageChange(totalPages)}
+								disabled={currentPage === totalPages}
+								className="p-2 rounded-lg border border-brand-secondary/20 text-brand-secondary hover:bg-brand-secondary/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+							>
+								<ChevronDoubleRightIcon className="w-4 h-4" />
+							</button>
+						</div>
+					)}
+				</div>
 			</section >
 		</div >
 	);
