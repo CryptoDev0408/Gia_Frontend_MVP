@@ -766,10 +766,48 @@ export const AIBlogPage: React.FC = () => {
 				}
 
 				{/* Total Blogs Count */}
-				<div className="flex items-center justify-center mb-4">
+				{/* <div className="flex items-center justify-center mb-4">
 					<div className="flex items-center gap-2 px-4 py-2 bg-brand-secondary/10 border border-brand-secondary/20 rounded-lg">
 						<span className="text-brand-secondary text-sm">Total Blogs:</span>
 						<span className="text-brand-accent font-semibold">{totalBlogs}</span>
+					</div>
+				</div> */}
+
+
+				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
+					{/* Right Side Buttons */}
+					<div className="flex items-center gap-3 flex-wrap ml-auto">
+						{/* Scraping Button - Admin Only */}
+						{isAdmin && (
+							<motion.button
+								onClick={handleScraping}
+								disabled={scraping}
+								whileHover={{ scale: scraping ? 1 : 1.05 }}
+								whileTap={{ scale: scraping ? 1 : 0.95 }}
+								className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${scraping
+									? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
+									: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400 cursor-pointer border border-brand-accent/50'
+									}`}
+							>
+								<BoltIcon className={`w-4 h-4 ${scraping ? 'animate-pulse' : ''}`} />
+								{scraping ? 'Scraping...' : 'Start Scraping'}
+							</motion.button>
+						)}
+
+						{/* Refresh Button */}
+						<motion.button
+							onClick={fetchBlogs}
+							disabled={loading || scraping}
+							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
+							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
+							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${loading || scraping
+								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
+								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
+								}`}
+						>
+							<ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+							Refresh
+						</motion.button>
 					</div>
 				</div>
 
@@ -853,42 +891,6 @@ export const AIBlogPage: React.FC = () => {
 					)}
 				</div>
 
-				<div className="flex items-center justify-between flex-wrap gap-4 mb-8">
-					{/* Right Side Buttons */}
-					<div className="flex items-center gap-3 flex-wrap ml-auto">
-						{/* Scraping Button - Admin Only */}
-						{isAdmin && (
-							<motion.button
-								onClick={handleScraping}
-								disabled={scraping}
-								whileHover={{ scale: scraping ? 1 : 1.05 }}
-								whileTap={{ scale: scraping ? 1 : 0.95 }}
-								className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${scraping
-									? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
-									: 'bg-gradient-to-r from-brand-accent to-pink-500 text-white hover:from-brand-accent/80 hover:to-pink-400 cursor-pointer border border-brand-accent/50'
-									}`}
-							>
-								<BoltIcon className={`w-4 h-4 ${scraping ? 'animate-pulse' : ''}`} />
-								{scraping ? 'Scraping...' : 'Start Scraping'}
-							</motion.button>
-						)}
-
-						{/* Refresh Button */}
-						<motion.button
-							onClick={fetchBlogs}
-							disabled={loading || scraping}
-							whileHover={{ scale: loading || scraping ? 1 : 1.05 }}
-							whileTap={{ scale: loading || scraping ? 1 : 0.95 }}
-							className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all select-none ${loading || scraping
-								? 'bg-brand-secondary/30 text-brand-secondary/70 cursor-not-allowed border border-brand-secondary/20'
-								: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 cursor-pointer border border-brand-secondary/20'
-								}`}
-						>
-							<ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-							Refresh
-						</motion.button>
-					</div>
-				</div>
 
 				{/* Scraping Status Message */}
 				{
