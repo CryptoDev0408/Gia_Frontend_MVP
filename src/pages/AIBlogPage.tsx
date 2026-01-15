@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon, PaperAirplaneIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, ChatBubbleLeftIcon, ChevronDownIcon, ArrowLeftIcon, ArrowPathIcon, BoltIcon, CheckIcon, TrashIcon, PaperAirplaneIcon, ChevronLeftIcon, ChevronRightIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, DocumentTextIcon, CheckCircleIcon, RectangleStackIcon } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { apiClient, API_ENDPOINTS } from '../config/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -758,31 +758,35 @@ export const AIBlogPage: React.FC = () => {
 					{/* Left Side: Admin Filter Buttons or Total Count */}
 					{isAdmin ? (
 						<div className="flex flex-wrap gap-3 items-center">
+							<span className="text-brand-secondary text-sm font-medium">Stage:</span>
 							<button
 								onClick={() => { setBlogFilter('draft'); setCurrentPage(1); }}
-								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'draft'
+								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none flex items-center gap-2 ${blogFilter === 'draft'
 									? 'bg-purple-500/20 text-purple-400 border border-purple-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
+								<DocumentTextIcon className="w-4 h-4" />
 								Draft ({blogCounts.draft})
 							</button>
 							<button
 								onClick={() => { setBlogFilter('published'); setCurrentPage(1); }}
-								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'published'
+								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none flex items-center gap-2 ${blogFilter === 'published'
 									? 'bg-green-500/20 text-green-400 border border-green-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
+								<CheckCircleIcon className="w-4 h-4" />
 								Published ({blogCounts.published})
 							</button>
 							<button
 								onClick={() => { setBlogFilter('all'); setCurrentPage(1); }}
-								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none ${blogFilter === 'all'
+								className={`px-4 py-2 rounded-lg text-sm transition-all cursor-pointer select-none flex items-center gap-2 ${blogFilter === 'all'
 									? 'bg-blue-500/20 text-blue-400 border border-blue-500/50'
 									: 'bg-brand-secondary/10 text-brand-secondary hover:bg-brand-secondary/20 border border-brand-secondary/20'
 									}`}
 							>
+								<RectangleStackIcon className="w-4 h-4" />
 								All Blogs ({blogCounts.all})
 							</button>
 						</div>
