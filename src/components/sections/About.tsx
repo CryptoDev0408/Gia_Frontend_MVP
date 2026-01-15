@@ -50,7 +50,7 @@ export const About: React.FC = () => {
         poster="/hero-video-background-1920x1080-cover.jpg"
         className="absolute inset-0 w-full h-full object-cover"
       >
-        <source src="/live-wall2.mp4" type="video/mp4" />
+        <source src="https://gia-vercel-frontend-video-upload.vercel.app/live-wall2.mp4" type="video/mp4" />
       </video>
 
       {/* Overlay */}
@@ -122,7 +122,7 @@ export const About: React.FC = () => {
                     className="w-auto h-auto object-contain rounded-xl lg:h-[calc(2*24rem+2rem)] max-h-[800px]"
                     style={{ aspectRatio: '864/1280' }}
                   >
-                    <source src="/PixVerse_V5_Image_Text_720P_Turn_this_still_im.mp4" type="video/mp4" />
+                    <source src="https://gia-vercel-frontend-video-upload.vercel.app/PixVerse_V5_Image_Text_720P_Turn_this_still_im.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>
@@ -189,7 +189,7 @@ export const About: React.FC = () => {
                     className="w-[100%] h-auto object-contain rounded-xl max-h-[480px] mx-auto"
                     style={{ aspectRatio: '1280/864', maxWidth: '640px' }}
                   >
-                    <source src="/PixVerse_V5_Image_Text_720P_Turn_this_still_ims.mp4" type="video/mp4" />
+                    <source src="https://gia-vercel-frontend-video-upload.vercel.app/PixVerse_V5_Image_Text_720P_Turn_this_still_ims.mp4" type="video/mp4" />
                   </video>
                 </div>
               </div>

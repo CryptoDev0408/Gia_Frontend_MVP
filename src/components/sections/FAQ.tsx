@@ -104,7 +104,7 @@ export const FAQ: React.FC = () => {
           video.play().catch(err => console.log('FAQ background video autoplay prevented:', err));
         }}
       >
-        <source src="/live-wall2.mp4" type="video/mp4" />
+        <source src="https://gia-vercel-frontend-video-upload.vercel.app/live-wall2.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-gradient-to-b from-brand-bg/80 via-brand-bg/70 to-brand-bg/80" />
 

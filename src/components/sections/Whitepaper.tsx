@@ -72,7 +72,7 @@ export const Whitepaper: React.FC = () => {
           video.play().catch(err => console.log('Whitepaper background video autoplay prevented:', err));
         }}
       >
-        <source src={whitepaper.video || '/live-wall2.mp4'} type="video/mp4" />
+        <source src={whitepaper.video || 'https://gia-vercel-frontend-video-upload.vercel.app/live-wall2.mp4'} type="video/mp4" />
       </video>
 
       {/* Video Overlay */}
@@ -136,7 +136,7 @@ export const Whitepaper: React.FC = () => {
               style={{ aspectRatio: '1280/864', maxWidth: '100%' }}
             >
               {/* <source src="/transparent-ROADMAP SITE.mp4" type="video/mp4" /> */}
-              <source src="/gia_roadmap_video.mp4" type="video/mp4" />
+              <source src="https://gia-vercel-frontend-video-upload.vercel.app/gia_roadmap_video.mp4" type="video/mp4" />
             </video>
             <motion.div
               className="absolute bottom-4 left-1/2 transform -translate-x-1/2"
@@ -273,7 +273,7 @@ export const Whitepaper: React.FC = () => {
                       src={whitepaper.video || '/PixVerse_V5_Image_Text_720P.mp4'}
                       type="video/mp4"
                     /> */}
-                    <source src="/PixVerse_V5_Image_Text_720P_Turn_this_still_im-high.mp4" type="video/mp4" />
+                    <source src="https://gia-vercel-frontend-video-upload.vercel.app/PixVerse_V5_Image_Text_720P_Turn_this_still_im-high.mp4" type="video/mp4" />
 
                   </video>
                 </div>

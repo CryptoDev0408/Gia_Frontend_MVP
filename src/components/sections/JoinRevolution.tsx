@@ -110,7 +110,7 @@ export const JoinRevolution: React.FC = () => {
         className="absolute inset-0 w-full h-full object-cover"
         style={{ objectFit: 'cover' }}
       >
-        <source src="/live-wall2.mp4" type="video/mp4" />
+        <source src="https://gia-vercel-frontend-video-upload.vercel.app/live-wall2.mp4" type="video/mp4" />
       </video>
 
       {/* Overlay */}
