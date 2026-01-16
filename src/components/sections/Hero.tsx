@@ -336,6 +336,7 @@ export const Hero: React.FC = () => {
                         event_category: 'document_download',
                         event_label: 'whitepaper_button',
                         document_url: btn.link,
+                        document_name: btn.label,
                         section: 'hero'
                       });
                     } else if (label.includes('teaser') || label.includes('one page')) {
@@ -343,6 +344,15 @@ export const Hero: React.FC = () => {
                         event_category: 'document_download',
                         event_label: 'onepage_teaser_button',
                         document_url: btn.link,
+                        document_name: btn.label,
+                        section: 'hero'
+                      });
+                    } else if (label.includes('deck') || label.includes('download')) {
+                      trackEvent('event_document_downloaddeck', {
+                        event_category: 'document_download',
+                        event_label: 'download_deck_button',
+                        document_url: btn.link,
+                        document_name: btn.label,
                         section: 'hero'
                       });
                     }

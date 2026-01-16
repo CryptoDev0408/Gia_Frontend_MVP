@@ -98,7 +98,17 @@ export const Whitepaper: React.FC = () => {
             variant="translucent"
             onClick={() => {
               if (whitepaper?.button_link) {
-                trackWhitepaperDownload(whitepaper?.button_text || 'Whitepaper');
+                // Track with new event name
+                if (typeof window !== 'undefined' && window.gtag) {
+                  window.gtag('event', 'event_document_whitepaper', {
+                    event_category: 'document_download',
+                    event_label: 'whitepaper_section',
+                    document_url: whitepaper.button_link,
+                    document_name: whitepaper?.button_text || 'Whitepaper',
+                    section: 'whitepaper',
+                    timestamp: new Date().toISOString()
+                  });
+                }
                 window.open(whitepaper.button_link, "_blank");
               }
             }}

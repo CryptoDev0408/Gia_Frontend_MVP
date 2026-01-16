@@ -145,6 +145,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 	};
 
 	const logout = () => {
+		// Track sign out event before clearing data
+		if (typeof window !== 'undefined' && window.gtag) {
+			window.gtag('event', 'event_sign_out', {
+				event_category: 'authentication',
+				event_label: 'user_sign_out',
+				timestamp: new Date().toISOString()
+			});
+		}
+
 		setUser(null);
 		setAccessToken(null);
 

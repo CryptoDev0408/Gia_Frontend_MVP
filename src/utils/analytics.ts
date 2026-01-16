@@ -41,7 +41,14 @@ export type EventName =
 	| 'event_nav_btn_aiblog'
 	| 'event_join_waitlist'
 	| 'event_document_whitepaper'
-	| 'event_document_onepageteaser';
+	| 'event_document_onepageteaser'
+	| 'event_document_downloaddeck'
+	| 'event_social_telegram'
+	| 'event_social_discord'
+	| 'event_social_x'
+	| 'event_social_instagram'
+	| 'event_social_youtube'
+	| 'event_social_linkedin';
 
 export interface EventParams {
 	event_category?: string;
@@ -74,14 +81,12 @@ export const trackEvent = (eventName: EventName, params?: EventParams): void => 
 				timestamp: new Date().toISOString(),
 			});
 
-			// Log in development
-			if (import.meta.env.DEV) {
-				console.log('📊 GA4 Event:', eventName, params);
-			}
+			// Always log to console for monitoring
+			console.log('📊 GA4 Event:', eventName, params);
 		} catch (error) {
 			console.error('Failed to track GA4 event:', error);
 		}
-	} else if (import.meta.env.DEV) {
+	} else {
 		console.warn('GA4 not initialized. Event:', eventName, params);
 	}
 };

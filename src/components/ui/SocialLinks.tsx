@@ -51,7 +51,30 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({ className = '', social
           href={social.url}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => trackSocialClick(social.network, social.url)}
+          onClick={() => {
+            // Map network to specific event name
+            const eventMap: Record<string, any> = {
+              'telegram': 'event_social_telegram',
+              'discord': 'event_social_discord',
+              'x': 'event_social_x',
+              'twitter': 'event_social_x',
+              'instagram': 'event_social_instagram',
+              'youtube': 'event_social_youtube',
+              'linkedin': 'event_social_linkedin'
+            };
+
+            const eventName = eventMap[social.network.toLowerCase()] || 'event_social_x';
+
+            if (typeof window !== 'undefined' && window.gtag) {
+              window.gtag('event', eventName, {
+                event_category: 'social_engagement',
+                event_label: social.network,
+                social_url: social.url,
+                section: 'footer',
+                timestamp: new Date().toISOString()
+              });
+            }
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
