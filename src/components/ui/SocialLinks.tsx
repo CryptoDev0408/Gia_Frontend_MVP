@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { SocialIcon } from 'react-social-icons';
 import { SOCIAL_LINKS } from '../../utils/constants';
-import { trackSocialClick } from '../../utils/analytics';
+// import { trackSocialClick } from '../../utils/analytics';
 
 interface SocialIconData {
   icon: string;

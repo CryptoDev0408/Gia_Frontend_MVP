@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import axios from 'axios';
-import { trackWhitepaperDownload } from '../../utils/analytics';
+// import { trackWhitepaperDownload } from '../../utils/analytics';
 
 // Icons
 import {

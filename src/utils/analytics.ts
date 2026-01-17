@@ -19,6 +19,7 @@ declare global {
 
 export type EventName =
 	| 'page_view'
+	| 'user_engagement' // GA4 standard engagement event
 	| 'email_signup'
 	| 'newsletter_subscribe'
 	| 'wallet_connect_attempt'
@@ -97,10 +98,28 @@ export const trackEvent = (eventName: EventName, params?: EventParams): void => 
  * @param title - The page title
  */
 export const trackPageView = (path: string, title?: string): void => {
-	trackEvent('page_view', {
-		page_path: path,
-		page_title: title || document.title,
-	});
+	// Send page_view event for SPA navigation
+	if (typeof window !== 'undefined' && window.gtag) {
+		window.gtag('config', 'G-9VQQ49T8YK', {
+			page_path: path,
+			page_title: title || document.title,
+		});
+		// Also log it
+		console.log('📊 GA4 Page View:', path, title || document.title);
+	}
+};
+
+/**
+ * Track user engagement
+ * Used to measure user interaction with the site
+ */
+export const trackUserEngagement = (engagementTime?: number): void => {
+	if (typeof window !== 'undefined' && window.gtag) {
+		window.gtag('event', 'user_engagement', {
+			engagement_time_msec: engagementTime || 100,
+		});
+		console.log('📊 GA4 User Engagement:', engagementTime || 100, 'ms');
+	}
 };
 
 /**
@@ -311,6 +330,7 @@ export const initGA4 = (measurementId: string, config?: Record<string, any>): vo
 export default {
 	trackEvent,
 	trackPageView,
+	trackUserEngagement,
 	trackEmailSignup,
 	trackNewsletterSubscribe,
 	trackWalletConnect,

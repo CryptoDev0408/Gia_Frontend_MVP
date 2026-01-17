@@ -14,7 +14,7 @@ import PrivacyPage from './pages/PrivacyPage';
 import PolicyPage from './pages/PolicyPage';
 import AIBlogPage from './pages/AIBlogPage';
 import { UsersPage } from './pages/UsersPage';
-import { trackPageView } from './utils/analytics';
+import { trackPageView, trackUserEngagement } from './utils/analytics';
 import './index.css';
 
 // Add window.ethereum type declarations
@@ -35,6 +35,13 @@ function PageViewTracker() {
   useEffect(() => {
     // Track page view on route change
     trackPageView(location.pathname);
+
+    // Track user engagement after page view
+    const engagementTimer = setTimeout(() => {
+      trackUserEngagement(3000); // User engaged for 3 seconds
+    }, 3000);
+
+    return () => clearTimeout(engagementTimer);
   }, [location]);
 
   return null;
