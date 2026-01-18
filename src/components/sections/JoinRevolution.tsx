@@ -4,6 +4,7 @@ import { Button } from '../ui/Button';
 import { CheckIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { trackEmailSignup, trackFormSubmit } from '../../utils/analytics';
+import { subscribeToWaitlist } from '../../services/mailchimpClient';
 
 type RevolutionData = {
   id: number;
@@ -68,16 +69,29 @@ export const JoinRevolution: React.FC = () => {
     setErrors({});
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, formData);
+      // Use the new Mailchimp-integrated endpoint
+      const response = await subscribeToWaitlist({
+        email: formData.email,
+        firstName: formData.first_name,
+        lastName: formData.last_name,
+        phone: formData.phone,
+        source: 'join_revolution_section',
+        consentGiven: allowContact
+      });
 
-      if (response.data.success) {
+      if (response.success) {
         // Track successful email signup
         trackEmailSignup('join_waitlist', true);
         trackFormSubmit('join_waitlist', true);
 
-        alert(response.data.message);
+        alert(response.message);
         setFormData({ email: '', first_name: '', last_name: '', phone: '' });
+        setAllowContact(false);
         setIsOpen(false);
+      } else {
+        // Show error message from backend/Mailchimp
+        alert(response.message || "Failed to join waitlist. Please try again.");
+        trackFormSubmit('join_waitlist', false);
       }
     } catch (error: any) {
       // Track failed signup
@@ -86,7 +100,7 @@ export const JoinRevolution: React.FC = () => {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
-        alert(error.response?.data?.message || "Something went wrong");
+        alert(error.response?.data?.message || "Something went wrong. Please try again.");
       }
     } finally {
       setIsLoading(false);

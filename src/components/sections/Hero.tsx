@@ -6,6 +6,7 @@ import { useTypingAnimation } from '../../hooks/useTypingAnimation';
 import { FaDiscord, FaTelegram, FaYoutube } from 'react-icons/fa';
 import { FaXTwitter } from "react-icons/fa6";
 import { trackEvent } from '../../utils/analytics';
+import { subscribeToWaitlist } from '../../services/mailchimpClient';
 
 interface ButtonType {
   label: string;
@@ -97,18 +98,29 @@ export const Hero: React.FC = () => {
     setErrors({});
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_LARAVEL_BACKEND_URL}/api/newsletter`, formData);
+      // Use the new Mailchimp-integrated endpoint
+      const response = await subscribeToWaitlist({
+        email: formData.email,
+        firstName: formData.first_name,
+        lastName: formData.last_name,
+        phone: formData.phone,
+        source: 'hero_section',
+        consentGiven: allowContact
+      });
 
-      if (response.data.success) {
-        alert(response.data.message);
+      if (response.success) {
+        alert(response.message);
         setFormData({ email: '', first_name: '', last_name: '', phone: '' });
+        setAllowContact(false);
         setIsOpen(false);
+      } else {
+        alert(response.message || "Failed to join waitlist. Please try again.");
       }
     } catch (error: any) {
       if (error.response?.data?.errors) {
         setErrors(error.response.data.errors);
       } else {
-        alert(error.response?.data?.message || "Something went wrong");
+        alert(error.response?.data?.message || "Something went wrong. Please try again.");
       }
     } finally {
       setIsLoading(false);
