@@ -7,7 +7,7 @@
  * Key Features:
  * - Direct API integration (no CSV uploads)
  * - Proper consent tracking through Mailchimp's system
- * - Double opt-in support
+ * - Single opt-in support (immediate subscription)
  * - GDPR compliant
  * 
  * Setup Required:
@@ -86,7 +86,7 @@ class MailchimpService {
       // Prepare subscriber data with proper structure for Mailchimp API
       const subscriberData = {
         email_address: subscriber.email,
-        status: 'pending', // Use 'pending' for double opt-in, 'subscribed' for single opt-in
+        status: 'subscribed', // Use 'subscribed' for single opt-in, 'pending' for double opt-in
         merge_fields: {
           FNAME: subscriber.firstName,
           LNAME: subscriber.lastName,
@@ -117,7 +117,7 @@ class MailchimpService {
 
       return {
         success: true,
-        message: 'Successfully subscribed! Please check your email to confirm your subscription.',
+        message: 'Successfully subscribed! You\'re now on the waitlist.',
         data: response.data
       };
 
@@ -127,7 +127,7 @@ class MailchimpService {
       // Handle specific Mailchimp errors
       if (error.response?.data) {
         const mailchimpError = error.response.data;
-        
+
         // Check if email already exists
         if (mailchimpError.title === 'Member Exists') {
           return {
@@ -181,7 +181,7 @@ class MailchimpService {
       const subscriberHash = await this.getSubscriberHash(email);
 
       const updateData: any = {};
-      
+
       if (updates.firstName || updates.lastName) {
         updateData.merge_fields = {
           ...(updates.firstName && { FNAME: updates.firstName }),

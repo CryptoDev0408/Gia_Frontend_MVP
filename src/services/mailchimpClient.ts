@@ -36,6 +36,7 @@ interface SubscriptionResponse {
  * 1. Save to our database (for backup/records)
  * 2. Send to Mailchimp API (for email campaigns)
  * 3. Properly track consent through Mailchimp system
+ * 4. Immediately subscribe with single opt-in (no email confirmation required)
  */
 export async function subscribeToWaitlist(data: SubscriberData): Promise<SubscriptionResponse> {
 	try {
