@@ -148,7 +148,7 @@ export const Hero: React.FC = () => {
           backfaceVisibility: 'hidden'
         }}
       >
-        <source src="https://gia-vercel-frontend-video-upload.vercel.app/hero.mp4" type="video/mp4" />
+        <source src="https://gia-files.vercel.app/hero.mp4" type="video/mp4" />
       </video>
 
       {/* Video Overlay */}
